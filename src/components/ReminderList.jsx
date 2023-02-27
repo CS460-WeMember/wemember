@@ -2,7 +2,7 @@ import "../styles/ReminderList.css"
 
 let items = [];
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 15; i++) {
   items.push('Reminder');
 }
 
