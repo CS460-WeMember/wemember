@@ -1,0 +1,14 @@
+.circle{
+    width:56px; 
+    height:56px; 
+    border-radius:50%; 
+    background-color:white; 
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.cross{
+    width:20px;
+    height:20px;
+}

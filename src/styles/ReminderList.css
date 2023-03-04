@@ -1,6 +1,7 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind variants;
 
 @layer components {
     .list-items {
@@ -10,4 +11,4 @@
     .list-layout {
         @apply h-screen w-48 md:w-60 lg:w-80 text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white overflow-hidden hover:overflow-auto;
     }
-}
+} */
