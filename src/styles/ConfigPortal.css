@@ -50,3 +50,8 @@
     background: #FFFFFF;
     margin-top: 108px;
 }
+
+.white-grid {
+    display:grid;
+    
+}

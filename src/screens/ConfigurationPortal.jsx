@@ -15,8 +15,9 @@ function ConfigurationPortal() {
                         <CancelButton className="cancel-button-positioning"/>
                     </div>
                 </div>
-                
+
                 <div className="semi-circle">
+                    
                 </div>
             </div>
         </div>
