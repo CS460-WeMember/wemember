@@ -49,9 +49,89 @@
     border-radius: 50%/100px 100px 0 0;
     background: #FFFFFF;
     margin-top: 108px;
+    display:flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .white-grid {
+    width:998px;
+    height: 400px;
     display:grid;
-    
+    grid-template-columns: 100px auto 100px;
+    grid-template-rows: auto 40px;
+}
+
+.input-container {
+    grid-row: 1;
+    grid-column: 1 / span 3;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-task-name-container {
+    margin-bottom: 60px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:32px;
+}
+
+.question-text {
+    font-size:28px;
+    font-weight:medium;
+    color: #146887;
+}
+
+.answer-box{
+    width:624px;
+    height:66px;
+    border-radius: 16px;
+    border: 1px solid #55BDE5;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding:8px;
+    padding-left:20px;
+    padding-right:20px;
+}
+
+
+.back-button{
+    grid-row: 2;
+    grid-column: 1;
+    border-radius: 4px;
+    border: 1px solid #146887;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    gap:8px;
+}
+
+.next-button{
+    grid-row: 2;
+    grid-column: 3;
+    border-radius: 4px;
+    border: 1px solid #146887;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    gap:8px;
+}
+
+.button-text{
+    font-size: 16;
+    font-weight: medium;
+    color: #146887;
+}
+
+.arrow-icon{
+    width:20px;
+    height:20px;
+    margin-bottom:2px;
+    color:#146887;
 }

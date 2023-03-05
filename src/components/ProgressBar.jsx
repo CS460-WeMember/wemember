@@ -9,7 +9,7 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
                 <BiBookContent className="icon"></BiBookContent>
                 <div className = {(setTask == "done")? "done-circle" : (setTask=="active")? "active-circle" : "inactive-circle"}>
                     {
-                        (setTask=="active" || setTask=="inactive") && <div className = {setTask =="active"? "active-dot" : "inactive-dot"}/>
+                        setTask=="active" && <div className = "active-dot"/>
                     }
                     {
                         setTask=="done" && <BiCheck className="icon"></BiCheck>
@@ -30,7 +30,7 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
                 <BiStopwatch className="icon"></BiStopwatch>
                 <div className = {(setTime == "done")? "done-circle" : (setTime=="active")? "active-circle" : "inactive-circle"}>
                     {
-                        (setTime=="active" || setTime=="inactive") && <div className = {setTime =="active"? "active-dot" : "inactive-dot"}/>
+                        setTime=="active" && <div className = "active-dot"/>
                     }
                     {
                         setTime=="done" && <BiCheck className="icon"></BiCheck>
@@ -54,7 +54,7 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
                 <BiCamera className="icon"></BiCamera>
                 <div className = {(setPicture == "done")? "done-circle" : (setPicture=="active")? "active-circle" : "inactive-circle"}>
                     {
-                        (setPicture=="active" || setPicture=="inactive") && <div className = {setPicture =="active"? "active-dot" : "inactive-dot"}/>
+                        setPicture=="active" && <div className = "active-dot"/>
                     }
                     {
                         setPicture=="done" && <BiCheck className="icon"></BiCheck>
@@ -75,7 +75,7 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
                 <BiVolumeFull className="icon"></BiVolumeFull>
                 <div className = {(setLights == "done")? "done-circle" : (setLights=="active")? "active-circle" : "inactive-circle"}>
                     {
-                        (setLights=="active" || setLights=="inactive") && <div className = {setLights =="active"? "active-dot" : "inactive-dot"}/>
+                        setLights=="active" && <div className = "active-dot"/>
                     }
                     {
                         setLights=="done" && <BiCheck className="icon"></BiCheck>
@@ -99,7 +99,7 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
                 <BiWrench className="icon"></BiWrench>
                 <div className = {(setOthers == "done")? "done-circle" : (setOthers=="active")? "active-circle" : "inactive-circle"}>
                     {
-                        (setOthers=="active" || setOthers=="inactive") && <div className = {setOthers =="active"? "active-dot" : "inactive-dot"}/>
+                        setOthers=="active" && <div className = "active-dot"/>
                     }
                     {
                         setOthers=="done" && <BiCheck className="icon"></BiCheck>
