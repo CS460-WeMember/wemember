@@ -3,12 +3,23 @@ import ProgressBar from "../components/ProgressBar";
 import "../styles/ConfigPortal.css";
 import { BiRightArrowAlt, BiLeftArrowAlt } from "react-icons/bi";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function ConfigPortalSetTask() {
+    const navigate = useNavigate();
     const [taskName, setTaskName] = useState('');
 
     function handleTaskNameChange(event) {
       setTaskName(event.target.value);
+    }
+
+    function handleBackButtonClick(event) {
+        console.log("back button clicked!");
+    }
+
+    function handleNextButtonClick(event) {
+        console.log("next button clicked!");
+        navigate("/config/settime");
     }
 
     return(
@@ -27,13 +38,13 @@ function ConfigPortalSetTask() {
                 <div className="semi-circle">
                     <div className="white-grid">
 
-                        <div className="input-container">
-                            <div className="input-task-name-container">
+                        <div className="main-input-container">
+                            <div className="set-task-name-container">
                                 <text className="question-text">
                                     What do you need to do?
                                 </text>
                                 <input 
-                                    className="answer-box" 
+                                    className="task-name-input-field" 
                                     style={{outline:'none'}}
                                     type="text"
                                     id="my-task-name"
@@ -44,14 +55,14 @@ function ConfigPortalSetTask() {
 
                         </div>
 
-                        <button className="back-button">
+                        <button className="back-button" onClick={handleBackButtonClick}>
                             <BiLeftArrowAlt className="arrow-icon"></BiLeftArrowAlt>
                             <text className="button-text">
                                 Back
                             </text>
                         </button>
 
-                        <button className="next-button">
+                        <button className="next-button" onClick={handleNextButtonClick}>
                             <text className="button-text">
                                 Next
                             </text>

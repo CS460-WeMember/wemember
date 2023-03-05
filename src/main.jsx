@@ -6,7 +6,8 @@ import {
     RouterProvider,
   } from "react-router-dom";
 import ReminderPortal from './screens/ReminderPortal';
-import ConfigurationPortal from './screens/ConfigurationPortal';
+import ConfigPortalSetTask from './screens/ConfigPortalSetTask';
+import ConfigPortalSetTime from './screens/ConfigPortalSetTime';
 import Test from './screens/Test';
 
 const router = createBrowserRouter([
@@ -16,8 +17,13 @@ const router = createBrowserRouter([
 },
 
 {
-    path:"config",
-    element: <ConfigurationPortal/>,
+    path:"config/settask",
+    element: <ConfigPortalSetTask/>,
+},
+
+{
+    path:"config/settime",
+    element: <ConfigPortalSetTime/>,
 },
 
 {

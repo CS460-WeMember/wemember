@@ -1,3 +1,4 @@
+/* config portal background base */
 .grey-background {
     background-color: #B9C1C8;
     height:100vh;
@@ -6,6 +7,7 @@
     align-items:center;
 }
 
+/* styles for the blue portion of the portal*/
 .blue-container {
     background-color:#55BDE5;
     height: 92vh;
@@ -43,6 +45,7 @@
     margin-right:32;
 }
 
+/* styles for the white portion of the portal*/
 .semi-circle {
     height: 75%;
     width: 100%;
@@ -62,7 +65,7 @@
     grid-template-rows: auto 40px;
 }
 
-.input-container {
+.main-input-container {
     grid-row: 1;
     grid-column: 1 / span 3;
     display:flex;
@@ -71,7 +74,20 @@
     align-items: center;
 }
 
-.input-task-name-container {
+.question-text {
+    font-size:28px;
+    font-weight:medium;
+    color: #146887;
+}
+
+.small-text {
+    font-size:16px;
+    font-weight: lighter;
+    color: #146887;
+}
+
+/*styles for setting task*/
+.set-task-name-container {
     margin-bottom: 60px;
     display:flex;
     flex-direction: column;
@@ -80,13 +96,7 @@
     gap:32px;
 }
 
-.question-text {
-    font-size:28px;
-    font-weight:medium;
-    color: #146887;
-}
-
-.answer-box{
+.task-name-input-field{
     width:624px;
     height:66px;
     border-radius: 16px;
@@ -100,7 +110,45 @@
     padding-right:20px;
 }
 
+/* styles for setting time and location*/
+.set-time-and-location-container{
+    margin-bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:40px;
+}
 
+.set-time-and-location-input-fields{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:20px;
+}
+
+.input-field-wrapper{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.set-time-and-location-input-field {
+    width:auto;
+    height:48px;
+    padding:12px;
+    border-radius: 8px;
+    border: 1px solid #E0E0E0;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap:8px;
+}
+
+/* back button, next button and icon styles */
 .back-button{
     grid-row: 2;
     grid-column: 1;
@@ -129,7 +177,7 @@
     color: #146887;
 }
 
-.arrow-icon{
+.icon{
     width:20px;
     height:20px;
     margin-bottom:2px;
