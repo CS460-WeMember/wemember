@@ -9,7 +9,7 @@ function ConfigurationPortal() {
 
                 <div className="blue-grid">
                     <div className="progress-bar-container">
-                        <ProgressBar setTask="active" setTime="inactive" setPicture="inactive" setLights="inactive" setOthers="inactive"/>
+                        <ProgressBar setTask="done" setTime="done" setPicture="done" setLights="active" setOthers="active"/>
                     </div>
                     <div className="cancel-button-container">
                         <CancelButton className="cancel-button-positioning"/>
@@ -17,7 +17,7 @@ function ConfigurationPortal() {
                 </div>
 
                 <div className="semi-circle">
-                    
+
                 </div>
             </div>
         </div>

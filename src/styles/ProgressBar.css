@@ -15,6 +15,18 @@
     align-items: center;
 }
 
+.done-circle{
+    height:32px;
+    width:32px;
+    margin-bottom:5px;
+    margin-top:10px;
+    border-radius: 100px;
+    background-color: #146887;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .active-circle{
     height:32px;
     width:32px;
@@ -28,13 +40,6 @@
     justify-content: center;
 }
 
-.active-dot{
-    height:10px;
-    width:10px;
-    border-radius: 100px;
-    background-color: #146887;
-}
-
 .inactive-circle{
     height:32px;
     width:32px;
@@ -46,6 +51,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.active-dot{
+    height:10px;
+    width:10px;
+    border-radius: 100px;
+    background-color: #146887;
 }
 
 .inactive-dot{
