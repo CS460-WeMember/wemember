@@ -8,6 +8,9 @@ import {
 import ReminderPortal from './screens/ReminderPortal';
 import ConfigPortalSetTask from './screens/ConfigPortalSetTask';
 import ConfigPortalSetTime from './screens/ConfigPortalSetTime';
+import ConfigPortalSetPicture from './screens/ConfigPortalSetPicture';
+import ConfigPortalSetLights from './screens/ConfigPortalSetLights';
+import ConfigPortalSetOthers from './screens/ConfigPortalSetOthers';
 import Test from './screens/Test';
 
 const router = createBrowserRouter([
@@ -24,6 +27,21 @@ const router = createBrowserRouter([
 {
     path:"config/settime",
     element: <ConfigPortalSetTime/>,
+},
+
+{
+    path:"config/setpicture",
+    element: <ConfigPortalSetPicture/>,
+},
+
+{
+    path:"config/setlights",
+    element: <ConfigPortalSetLights/>,
+},
+
+{
+    path:"config/setothers",
+    element: <ConfigPortalSetOthers/>,
 },
 
 {

@@ -6,13 +6,13 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
     return(
         <div className="container">
             <div className="checkpoint">
-                <BiBookContent className="icon"></BiBookContent>
+                <BiBookContent className="progress-bar-icon"></BiBookContent>
                 <div className = {(setTask == "done")? "done-circle" : (setTask=="active")? "active-circle" : "inactive-circle"}>
                     {
                         setTask=="active" && <div className = "active-dot"/>
                     }
                     {
-                        setTask=="done" && <BiCheck className="icon"></BiCheck>
+                        setTask=="done" && <BiCheck className="progress-bar-icon"></BiCheck>
                     }
                 </div>
                 <div className="text-container">
@@ -27,13 +27,13 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
             </div>
 
             <div className="checkpoint">
-                <BiStopwatch className="icon"></BiStopwatch>
+                <BiStopwatch className="progress-bar-icon"></BiStopwatch>
                 <div className = {(setTime == "done")? "done-circle" : (setTime=="active")? "active-circle" : "inactive-circle"}>
                     {
                         setTime=="active" && <div className = "active-dot"/>
                     }
                     {
-                        setTime=="done" && <BiCheck className="icon"></BiCheck>
+                        setTime=="done" && <BiCheck className="progress-bar-icon"></BiCheck>
                     }
                 </div>
                 <div className="text-container">
@@ -51,13 +51,13 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
             </div>
 
             <div className="checkpoint">
-                <BiCamera className="icon"></BiCamera>
+                <BiCamera className="progress-bar-icon"></BiCamera>
                 <div className = {(setPicture == "done")? "done-circle" : (setPicture=="active")? "active-circle" : "inactive-circle"}>
                     {
                         setPicture=="active" && <div className = "active-dot"/>
                     }
                     {
-                        setPicture=="done" && <BiCheck className="icon"></BiCheck>
+                        setPicture=="done" && <BiCheck className="progress-bar-icon"></BiCheck>
                     }
                 </div>
                 <div className="text-container">
@@ -72,13 +72,13 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
             </div>
 
             <div className="checkpoint">
-                <BiVolumeFull className="icon"></BiVolumeFull>
+                <BiVolumeFull className="progress-bar-icon"></BiVolumeFull>
                 <div className = {(setLights == "done")? "done-circle" : (setLights=="active")? "active-circle" : "inactive-circle"}>
                     {
                         setLights=="active" && <div className = "active-dot"/>
                     }
                     {
-                        setLights=="done" && <BiCheck className="icon"></BiCheck>
+                        setLights=="done" && <BiCheck className="progress-bar-icon"></BiCheck>
                     }
                 </div>
                 <div className="text-container">
@@ -96,13 +96,13 @@ function ProgressBar({setTask, setTime, setPicture, setLights, setOthers}) {
             </div>
 
             <div className="checkpoint">
-                <BiWrench className="icon"></BiWrench>
+                <BiWrench className="progress-bar-icon"></BiWrench>
                 <div className = {(setOthers == "done")? "done-circle" : (setOthers=="active")? "active-circle" : "inactive-circle"}>
                     {
                         setOthers=="active" && <div className = "active-dot"/>
                     }
                     {
-                        setOthers=="done" && <BiCheck className="icon"></BiCheck>
+                        setOthers=="done" && <BiCheck className="progress-bar-icon"></BiCheck>
                     }
                 </div>
                 <div className="text-container">

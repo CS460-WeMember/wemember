@@ -148,6 +148,27 @@
     gap:8px;
 }
 
+/* styles for setting picture */
+.set-picture-container {
+    margin-bottom: 60px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:24px;
+}
+
+.picture-box{
+    width:440px;
+    height:200px;
+    border-radius:16px;
+    border: 1px solid #55BDE5;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* back button, next button and icon styles */
 .back-button{
     grid-row: 2;
