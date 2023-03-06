@@ -1,13 +1,19 @@
 import CancelButton from "../components/CancelButton";
 import ProgressBar from "../components/ProgressBar";
-
 import "../styles/ConfigPortal.css";
+import { HuePicker } from 'react-color';
 import { BiRightArrowAlt, BiLeftArrowAlt, BiTimeFive } from "react-icons/bi";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function ConfigPortalSetLights() {
     const navigate = useNavigate();
+
+    const [color, setColor] = useState('#FFE600'); // set the initial color to yellow
+    function handleColorChange(newColor) {
+      setColor(newColor.hex);
+      console.log("color change detected: " + color);
+    }
 
     function handleBackButtonClick(event) {
         console.log("back button clicked!");
@@ -42,6 +48,35 @@ function ConfigPortalSetLights() {
                 <div className="white-grid">
                   <div className="main-input-container">
                       
+                    <text className="question-text" style={{fontWeight:"bold"}}>
+                      Configure
+                    </text>
+                    <text className="small-text">
+                      Adjust the lights and sounds of your reminder!
+                    </text>
+
+                    <div className="config-container">
+                      <text className="question-text" style={{fontSize:"24px", fontWeight:"bold"}}>
+                        Lights
+                      </text>
+
+                      <div className="pick-light-color-container">
+                        <div className="light-color-header">
+                          <text className="small-text">
+                            Pick a light color:
+                          </text>
+                          <div className="color-display-container">
+                            <button className="color-display" style={{backgroundColor: color}}/>
+                          </div>
+                        </div>
+                        <HuePicker style={{marginTop: "5px"}} color={color} onChange={handleColorChange}></HuePicker>
+                      </div>
+
+                      <text className="small-text">
+                        Brightness:
+                      </text>
+
+                    </div>
 
 
                   </div>

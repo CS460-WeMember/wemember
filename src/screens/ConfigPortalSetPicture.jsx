@@ -46,7 +46,7 @@ function ConfigPortalSetPicture() {
                         Add a photo
                       </text>
                       <div className="picture-box">
-                        <input type="file"></input>
+                        <input type="file" style={{textAlign:'center'}}></input>
                       </div>
                     </div>
                   </div>

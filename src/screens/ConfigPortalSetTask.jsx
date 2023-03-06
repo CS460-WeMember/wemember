@@ -56,7 +56,7 @@ function ConfigPortalSetTask() {
                         </div>
 
                         <button className="back-button" onClick={handleBackButtonClick}>
-                            <BiLeftArrowAlt className="arrow-icon"></BiLeftArrowAlt>
+                            <BiLeftArrowAlt className="icon"></BiLeftArrowAlt>
                             <text className="button-text">
                                 Back
                             </text>
@@ -66,7 +66,7 @@ function ConfigPortalSetTask() {
                             <text className="button-text">
                                 Next
                             </text>
-                            <BiRightArrowAlt className="arrow-icon"></BiRightArrowAlt>
+                            <BiRightArrowAlt className="icon"></BiRightArrowAlt>
                         </button>
 
                     </div>
