@@ -8,6 +8,6 @@
     }
 
     .reminder-card {
-        @apply card w-auto mr-10 h-full max-w-3xl aspect-square bg-base-100 dark:bg-gray-700;
+        @apply card w-auto mr-10 max-w-3xl aspect-square bg-base-100 dark:bg-gray-700;
     }
 } */

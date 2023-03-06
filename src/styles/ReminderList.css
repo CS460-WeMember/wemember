@@ -1,14 +1,48 @@
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
 
+@layer utilities {
+    .border-white {
+        border-color: white;
+      }
+
+    .bg-white {
+        background-color: white;
+    }
+
+    .text-gray-900 {
+        color: rgb(17 24 39);
+    }
+    
+    .text-white {
+        color: white;
+    }
+
+    .border-gray-200 {
+        border-color: rgb(229 231 235);
+    }
+}
+
 @layer components {
     .list-items {
-        @apply box-border h-20 md:text-2xl lg:text-3xl relative flex w-full px-5 items-center border-b border-gray-500 rounded-lg hover:bg-gray-600 text-xl font-bold leading-none tracking-tight text-gray-900 dark:text-white;
+        @apply btn h-20 mb-5 text-base lg:text-2xl relative flex w-full px-5 items-center text-white bg-light-blue border-b border-white rounded-lg break-all;
+    }
+
+    .list-items:hover {
+        @apply bg-white dark:text-light-blue border-white text-transparent;
     }
 
     .list-layout {
-        @apply h-screen w-48 md:w-60 lg:w-80 text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white overflow-hidden hover:overflow-auto;
+        @apply h-screen px-10 w-full text-gray-900 bg-light-blue border-gray-200 overflow-auto;
     }
-} */
+
+    .config-btn {
+        @apply btn my-10 bg-white text-light-blue border-transparent shadow-lg;
+    }
+
+    .config-btn:hover {
+        @apply bg-light-blue text-white border-white
+    }
+}
