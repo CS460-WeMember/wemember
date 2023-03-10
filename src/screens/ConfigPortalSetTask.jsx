@@ -15,12 +15,17 @@ function ConfigPortalSetTask() {
 
     function handleBackButtonClick(event) {
         console.log("back button clicked!");
+        navigate("/")
     }
 
     function handleNextButtonClick(event) {
         console.log("next button clicked!");
         navigate("/config/settime");
     }
+
+    var helpReceived = sessionStorage.getItem("helpMe");
+
+    console.log(helpReceived);
 
     return(
         <div className="grey-background">

@@ -1,45 +1,42 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@tailwind variants;
 
-@layer utilities {
-    .border-white {
-        border-color: white;
-      }
+.border-white {
+    border-color: white;
+}
 
-    .bg-white {
-        background-color: white;
-    }
+.bg-white {
+    background-color: white;
+}
 
-    .text-gray-900 {
-        color: rgb(17 24 39);
-    }
-    
-    .text-white {
-        color: white;
-    }
+.text-white {
+    color: white;
+}
 
-    .border-gray-200 {
-        border-color: rgb(229 231 235);
-    }
+.text-gray-900 {
+    color: rgb(17 24 39);
+}
+
+.border-gray-200 {
+    border-color: rgb(229 231 235);
 }
 
 @layer components {
     .list-items {
-        @apply btn h-20 mb-5 text-base lg:text-2xl relative flex w-full px-5 items-center text-white bg-light-blue border-b border-white rounded-lg break-all;
+        @apply btn h-20 mb-5 text-base lg:text-2xl relative flex w-full px-5 items-center bg-light-blue border-b border-white rounded-lg font-bold leading-none tracking-tight text-white break-all;
     }
 
     .list-items:hover {
-        @apply bg-white dark:text-light-blue border-white text-transparent;
+        @apply bg-white border-white text-light-blue;
     }
 
     .list-layout {
-        @apply h-screen px-10 w-full text-gray-900 bg-light-blue border-gray-200 overflow-auto;
+        @apply h-screen px-10 w-full text-gray-900 bg-light-blue border-gray-200 text-white overflow-auto;
     }
 
     .config-btn {
-        @apply btn my-10 bg-white text-light-blue border-transparent shadow-lg;
+        @apply btn my-10 bg-white text-light-blue border-white shadow-lg;
     }
 
     .config-btn:hover {
