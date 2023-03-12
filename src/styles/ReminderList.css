@@ -24,7 +24,7 @@
 
 @layer components {
     .list-items {
-        @apply btn h-20 mb-5 text-base lg:text-2xl relative flex w-full px-5 items-center bg-light-blue border-b border-white rounded-lg font-bold leading-none tracking-tight text-white break-all;
+        @apply btn h-20 mb-5 text-base lg:text-2xl relative flex justify-start px-10 bg-light-blue border-b border-white rounded-lg font-bold leading-none tracking-tight text-white break-all;
     }
 
     .list-items:hover {

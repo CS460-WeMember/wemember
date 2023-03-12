@@ -1,16 +1,7 @@
 import "../styles/ReminderList.css";
 import { useNavigate } from "react-router-dom";
-import PocketBase from "pocketbase";
-import React, { useState } from "react";
 
-const pb = new PocketBase("http://129.150.56.59:8090");
-
-const list = await pb.collection("regular").getFullList({
-  sort: "-created",
-});
-
-
-const ReminderList = ({onItemChange}) => {
+const ReminderList = ({onItemChange , list}) => {
   const navigate = useNavigate();
 
   const items = [];
@@ -24,16 +15,30 @@ const ReminderList = ({onItemChange}) => {
     navigate("config/settask");
   }
 
-  const showItem = (item) => {
-    onItemChange(JSON.stringify(item));
+  const showItem = (itemIndex) => {
+    onItemChange(itemIndex);
   }
 
   let itemList = items.map((item, index) => {
-    return (
-      <li className="list-items" key={index} onClick={() => showItem(item)}>
-        {index + 1} - {item.title}
+    if (item.hour > 12) {
+      return (
+      <li className="list-items" key={index} onClick={() => showItem(index)}>
+        {(item.hour)%12}.{item.minute} PM - {item.title}
       </li>
     );
+    } else if (item.hour < 12) {
+      return (
+        <li className="list-items" key={index} onClick={() => showItem(index)}>
+          {(item.hour)}.{item.minute} AM - {item.title}
+        </li>
+      );
+    } else {
+      return (
+        <li className="list-items" key={index} onClick={() => showItem(index)}>
+          {(item.hour)}.{item.minute} PM - {item.title}
+        </li>
+      );
+    }    
   });
 
   return (
