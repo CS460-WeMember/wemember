@@ -1,10 +1,7 @@
 import phoebe from "../assets/phoebe.jpg";
-import {items} from "./ReminderList.jsx";
-import {useState} from "react";
+import React from "react";
 
-function ReminderCard() {
-  
-
+const ReminderCard = ({ item }) => {
   return (
     <div className="card w-auto mr-10 h-full max-w-3xl aspect-square bg-base-100 dark:bg-gray-700">
       <figure>
@@ -15,7 +12,7 @@ function ReminderCard() {
           Phoebe!
           <div className="badge badge-info">UPCOMING</div>
         </h1>
-        {/* <p className='text-white'>{item}</p> */}
+        <p className="text-white">{item}</p>
       </div>
     </div>
   );
