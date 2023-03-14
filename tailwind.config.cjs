@@ -13,6 +13,10 @@ module.exports = {
         'dark-blue' : '#146887',
         'light-grey' : '#D9D9D9',
         'dark-grey' : '#9CA3AF',
+        'sky-blue' : "#97B2F1",
+    },
+    aspectRatio: {
+      '2/1': '2 / 1',
     },
     extend: {},
   },
