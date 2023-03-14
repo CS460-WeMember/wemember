@@ -15,6 +15,27 @@ function ConfigPortalSetLights() {
       console.log("color change detected: " + color);
     }
 
+    const [brightness, setBrightness] = useState(50);
+    function handleBrightnessChange(event) {
+        setBrightness(event.target.value);
+        console.log("brightness change detected: " + brightness);
+    }
+
+    const [audioFile, setAudioFile] = useState(null);
+    const [audioPreview, setAudioPreview] = useState(null);
+    function handleAudioChange(event) {
+      const selectedFile = event.target.files[0];
+      const previewURL = URL.createObjectURL(selectedFile);
+  
+      setAudioFile(selectedFile);
+      setAudioPreview(previewURL);
+    }
+
+    const [audioVolume, setAudioVolume] = useState(100);
+    function handleAudioVolumeChange(event) {
+      setAudioVolume(event.target.value);
+    }
+
     function handleBackButtonClick(event) {
         console.log("back button clicked!");
         navigate("/config/setpicture");
@@ -46,37 +67,79 @@ function ConfigPortalSetLights() {
 
               <div className="semi-circle">
                 <div className="white-grid">
-                  <div className="main-input-container">
+                  <div className="main-input-container" style={{gap:"24px"}}>
                       
-                    <text className="question-text" style={{fontWeight:"bold"}}>
-                      Configure
-                    </text>
-                    <text className="small-text">
-                      Adjust the lights and sounds of your reminder!
-                    </text>
-
-                    <div className="config-container">
-                      <text className="question-text" style={{fontSize:"24px", fontWeight:"bold"}}>
-                        Lights
+                    <div className="config-screen-header-wrapper">
+                      <text className="question-text">
+                        Adjust the lights and sounds of your reminder!
                       </text>
+                    </div>
 
-                      <div className="pick-light-color-container">
-                        <div className="light-color-header">
-                          <text className="small-text">
-                            Pick a light color:
-                          </text>
-                          <div className="color-display-container">
-                            <button className="color-display" style={{backgroundColor: color}}/>
+                    <div className="config-containers-wrapper">
+                      <div className="config-container">
+                        <text className="question-text" style={{fontSize:"24px", fontWeight:"bold"}}>
+                          Lights
+                        </text>
+
+                        <div className="pick-light-options-wrapper"> 
+                          <div className="pick-light-color-container">
+                            <div className="light-color-header">
+                              <text className="small-text">
+                                Pick a light color:
+                              </text>
+                              <div className="color-display-container">
+                                <div className="color-display" style={{backgroundColor: color}}/>
+                              </div>
+                            </div>
+                            <HuePicker style={{marginTop: "5px"}} color={color} onChange={handleColorChange}></HuePicker>
+                          </div>
+
+                          <div className="pick-percentage-container">
+                            <text className="small-text">
+                              Set brightness: {brightness}%
+                            </text>
+                            <div>
+                              <input type="range" min="0" max="100" value={brightness} onChange={handleBrightnessChange} />
+                            </div>
                           </div>
                         </div>
-                        <HuePicker style={{marginTop: "5px"}} color={color} onChange={handleColorChange}></HuePicker>
+
                       </div>
 
-                      <text className="small-text">
-                        Brightness:
-                      </text>
+
+                      <div className="config-container">
+                        <text className="question-text" style={{fontSize:"24px", fontWeight:"bold"}}>
+                          Audio
+                        </text>
+
+                        <div className="pick-audio-container">
+                          <text className="small-text">
+                            Add an audio clip: 
+                          </text>
+                          <div className="pick-audio-button">
+                            <input type="file" accept="audio/*" onChange={handleAudioChange} />
+                          </div>
+                          <audio controls src={audioPreview}>
+                                Your browser does not support the audio tag.
+                          </audio>
+                        </div>
+
+                        <div className="pick-percentage-container">
+                          <text className="small-text">
+                            Set volume: {audioVolume}%
+                          </text>
+                          <div>
+                            <input type="range" min="0" max="100" value={audioVolume} onChange={handleAudioVolumeChange} />
+                          </div>
+                        </div>
+
+
+                      </div>
 
                     </div>
+
+
+
 
 
                   </div>
