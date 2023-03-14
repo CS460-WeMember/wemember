@@ -11,18 +11,27 @@ const list = await pb.collection("regular").getFullList({
   sort: "-created",
 });
 
+list.sort((a, b) => {
+  if (a.hour === b.hour) {
+    return a.minute - b.minute;
+  } else {
+    return a.hour - b.hour;
+  }
+});
+
 function ReminderPortal() {
   const [index, setIndex] = useState(0);
 
   function getImageUrl(item) {
-    return backEndUrl + "/api/files/regular/" + item.id + "/" + item.picture;
+    if (!item.picture) {
+      return null;
+    } else {
+      return backEndUrl + "/api/files/regular/" + item.id + "/" + item.picture;
+    }
   }
-
-  const [imageUrl, setImageUrl] = useState(getImageUrl(list[index]));
 
   function handleNewItem(itemChange) {
     setIndex(itemChange);
-    setImageUrl(getImageUrl(list[itemChange]));
   }
 
   return (
@@ -31,7 +40,7 @@ function ReminderPortal() {
         <ReminderList onItemChange={handleNewItem} list={list} />
       </div>
       <div className="col-span-2 grow justify-self-center">
-        <ReminderCard itemTitle={list[index].title} itemPicture={imageUrl} />
+        <ReminderCard item={list[index]} backEndUrl={backEndUrl} />
       </div>
     </div>
   );

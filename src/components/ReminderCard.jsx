@@ -1,30 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Batch from "./Batch.jsx";
 
-
-const ReminderCard = ({ itemTitle, itemPicture }) => {
-  const image = (itemPicture) => {
+const ReminderCard = ({ item, backEndUrl }) => {
+  function getImageUrl(item) {
+    if (!item.picture) {
+      return null;
+    } else {
+      return backEndUrl + "/api/files/regular/" + item.id + "/" + item.picture;
+    }
+  }
+  
+  const image = (item) => {
+    const itemPicture = getImageUrl(item);
+    console.log(item.picture);
     if (itemPicture == null) {
-      return;
+      return null;
     } else {
       return (
-        <figure>
-        <img src={itemPicture}/>
-        </figure>
+        <div className="border border-light-blue rounded-lg shadow-lg aspect-2/1 w-3/12 md:w-1/2 lg:w-7/12">
+          <figure>
+            <img
+              className="object-fill rounded-lg aspect-2/1"
+              src={itemPicture}
+            />
+          </figure>
+        </div>
       );
     }
   };
   return (
-    <div className="card w-auto mr-10 h-full max-w-3xl aspect-square bg-base-100 dark:bg-gray-700">
-      {itemPicture && (<figure>
-        <img src={itemPicture}/>
-      </figure>)}
-      <div className="card-body rounded-b-lg text-white">
-        <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl">
-        {itemTitle}
-          <div className="badge badge-info ml-5 align-middle">UPCOMING</div>
+    <div className="grid place-items-center aspect-square">
+      {image(item)}
+
+      <div className="border flex aspect-2/1 min-w-[300px] w-3/12 md:w-1/2 lg:w-7/12 border-light-blue rounded-lg shadow-lg mt-10 rounded-b-lg text-dark-blue justify-center items-center">
+        <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl break-words">
+          {item.title} 
+          <Batch itemHour={item.hour} itemMin ={item.minute}/>
         </h1>
       </div>
     </div>
   );
-}
+};
 export default ReminderCard;
