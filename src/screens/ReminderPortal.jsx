@@ -22,14 +22,6 @@ list.sort((a, b) => {
 function ReminderPortal() {
   const [index, setIndex] = useState(0);
 
-  function getImageUrl(item) {
-    if (!item.picture) {
-      return null;
-    } else {
-      return backEndUrl + "/api/files/regular/" + item.id + "/" + item.picture;
-    }
-  }
-
   function handleNewItem(itemChange) {
     setIndex(itemChange);
   }
