@@ -1,11 +1,7 @@
 import ReminderList from "../components/ReminderList.jsx";
 import ReminderCard from "../components/ReminderCard.jsx";
 import React, { useState, useEffect } from "react";
-import PocketBase from "pocketbase";
-
-const backEndUrl = "http://129.150.56.59:8090";
-
-const pb = new PocketBase(backEndUrl);
+import pb from "../api/pocketbase.jsx";
 
 const regularList = await pb.collection("regular").getFullList({
   sort: "-created",
@@ -68,7 +64,7 @@ function ReminderPortal() {
         <ReminderList onItemChange={handleNewItem} list={list} />
       </div>
       <div className="col-span-2 grow justify-self-center">
-        <ReminderCard item={list[index]} backEndUrl={backEndUrl} />
+        <ReminderCard item={list[index]} backEndUrl={import.meta.env.VITE_API_URL} />
       </div>
     </div>
   );
