@@ -9,10 +9,20 @@ import { useNavigate } from "react-router-dom";
 function ConfigPortalSetTime() {
     const navigate = useNavigate();
 
-    const [location, setLocation] = useState('');
-    const handleLocationChange = (event) => {
-      setLocation(event.target.value);
-    };
+    const [date, setDate] = useState(null);
+    const handleDateChange= (event) => {
+        setDate(event.target.value);
+    }
+
+    const [startTime, setStartTime] = useState(null);
+    const handleStartChange = (event) => {
+        setStartTime(event.target.value);
+    }
+
+    const [endTime, setEndTime] = useState(null);
+    const handleEndChange = (event) => {
+        setEndTime(event.target.value);
+    }
 
     const [repeat, setRepeat] = useState('');
     const handleRepeatChange = (event) => {
@@ -27,6 +37,12 @@ function ConfigPortalSetTime() {
     function handleNextButtonClick(event) {
         console.log("next button clicked!");
         navigate("/config/setpicture");
+        localStorage.setItem("date", date);
+        localStorage.setItem("startTime", startTime);
+        localStorage.setItem("endTime", endTime);
+        localStorage.setItem("repeat", repeat);
+        console.log("date: " + localStorage.getItem("date") + ", start time: " +  localStorage.getItem("startTime") + ", end time: " +  localStorage.getItem("endTime")  + ", repeat: " +  localStorage.getItem("repeat") );
+
     }
 
     return(
@@ -70,6 +86,7 @@ function ConfigPortalSetTime() {
                                   id="date-input" 
                                   name="date" 
                                   style={{outline:'none'}}
+                                  onChange={handleDateChange}
                                 />
                               </div>
                             </div>
@@ -85,6 +102,7 @@ function ConfigPortalSetTime() {
                                   id="start-time-input" 
                                   name="start-time" 
                                   style={{outline:'none'}}
+                                  onChange={handleStartChange}
                                 />
                                 <BiTimeFive className="icon"/>
                               </div>
@@ -101,28 +119,9 @@ function ConfigPortalSetTime() {
                                   id="start-time-input" 
                                   name="start-time" 
                                   style={{outline:'none'}}
+                                  onChange={handleEndChange}
                                 />
                                 <BiTimeFive className="icon"/>
-                              </div>
-                            </div>
-
-                            <div className="input-field-wrapper">
-                              <text className="small-text">
-                                Where?
-                              </text>
-                              <div className="set-time-and-location-input-field">
-                                <select 
-                                    id="dropdown" 
-                                    value={location} 
-                                    onChange={handleLocationChange} 
-                                    style={{backgroundColor:"white", fontWeight:"normal"}} 
-                                    className="small-text"
-                                >
-                                  <option value="">Choose a location</option>
-                                  <option value="option1">Option 1</option>
-                                  <option value="option2">Option 2</option>
-                                  <option value="option3">Option 3</option>
-                                </select>
                               </div>
                             </div>
 
@@ -139,9 +138,9 @@ function ConfigPortalSetTime() {
                                     className="small-text"
                                   >
                                     <option value="">Choose how often</option>
-                                    <option value="option1">Option 1</option>
-                                    <option value="option2">Option 2</option>
-                                    <option value="option3">Option 3</option>
+                                    <option value="nil">No repeat</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
                                 </select>
                               </div>
                             </div>

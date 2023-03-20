@@ -11,6 +11,7 @@ function ConfigPortalSetTask() {
 
     function handleTaskNameChange(event) {
       setTaskName(event.target.value);
+      console.log("Task name set: " + taskName);
     }
 
     function handleBackButtonClick(event) {
@@ -20,6 +21,8 @@ function ConfigPortalSetTask() {
 
     function handleNextButtonClick(event) {
         console.log("next button clicked!");
+        localStorage.setItem("title", taskName)
+        console.log("Final task name in localStorage: " + localStorage.getItem("title"));
         navigate("/config/settime");
     }
 
