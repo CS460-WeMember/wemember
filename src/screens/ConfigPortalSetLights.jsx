@@ -38,37 +38,63 @@ function ConfigPortalSetLights() {
       setAudioVolume(event.target.value);
     }
 
-    function handleBackButtonClick(event) {
+    function handleBackButtonClick() {
         console.log("back button clicked!");
         navigate("/config/setpicture");
     }
 
-    async function handleNextButtonClick(event) {
+    async function handleNextButtonClick() {
         console.log("next button clicked!");
-        console.log("color: " + color + ", brightness: " + brightness + ", audioVolume: " + audioVolume);
+        //format the options JSON object for uploading to DB
+        const light = color.substring(1);
+        const colorBrightness = "" + brightness;
+        const sound = "" + audioVolume;
+
         const options = 
         {
-            "light": color.substring(1), 
-            "brightness": "" + brightness, 
-            "sound":  "" + audioVolume
+            "light": light, 
+            "brightness": colorBrightness, 
+            "sound": sound
         }
+        console.log("options");
+        console.log(options);
+        //append the audio file to formData
+        var fileInput = document.getElementById('audio');
+        var file = fileInput.files[0];
+        var formData = new FormData();
+        console.log("audio file:");
+        console.log(file);
+        formData.append('audio', file);
+        console.log("formdata:");
+        console.log(formData);
 
-        const client = new PocketBase(url);
+        /*-------------------------------
+        UPLOAD TO DATABASE
+        ---------------------------------*/
+        //url for upload and getting recordId
+        const pb = new PocketBase(url);
         const recordId = localStorage.getItem("recordId");
+
+        //check if the repeat is daily or weekly and upload to the correct db
+        var databaseCollection = "";
         if (localStorage.getItem("repeat") == "nil") { //for adhoc
-            const record = await client.collection('adhoc').update(recordId, {
-                "options": options
-            });
-            console.log("pocketbase response: ");
-            console.log(record);
+            databaseCollection = "adhoc";
         } else { //for regular
-            const record = await client.collection('regular').update(recordId, {
-                "options": options
-            });
-            console.log("pocketbase response: ");
-            console.log(record);
+            databaseCollection = "regular";
         }
 
+        //audio upload
+        const uploadAudioRes = await pb.collection(databaseCollection).update(recordId, formData);
+        console.log("pocketbase audio upload response: ");
+        console.log(uploadAudioRes);
+        //options upload
+        const uploadOptionsRes = await pb.collection(databaseCollection).update(recordId, {
+            "options": {options}
+        });
+        console.log("pocketbase options upload response: ");
+        console.log(uploadOptionsRes);
+
+        //navigate to the next page
         navigate("/config/setothers");
     }
 
@@ -143,7 +169,7 @@ function ConfigPortalSetLights() {
                             Add an audio clip: 
                           </text>
                           <div className="pick-audio-button">
-                            <input type="file" accept="audio/*" onChange={handleAudioChange} />
+                            <input type="file" accept=".mp3/*" id="audio" onChange={handleAudioChange} />
                           </div>
                           <audio controls src={audioPreview}>
                                 Your browser does not support the audio tag.
