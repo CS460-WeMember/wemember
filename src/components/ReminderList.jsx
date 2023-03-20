@@ -75,8 +75,8 @@ const ReminderList = ({ onItemChange, list }) => {
     } else if (status == states.passed) {
       return (
         <li className="list-items-done" key={index} onClick={() => showItem(index)}>
-          {itemHour}.{itemMinute} {afterNoon} - {item.title}
-          <BsFillCheckCircleFill className="w-[30px] ml-[5px] aspect-square" />
+          <p className="flex justify-start w-80 truncate overflow-hidden overflow-ellipsis ">{itemHour}.{itemMinute} {afterNoon} - {item.title}</p>
+          <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
         </li>
       );
     }

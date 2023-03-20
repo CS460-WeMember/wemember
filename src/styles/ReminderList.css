@@ -32,7 +32,7 @@
     }
 
     .list-items-done {
-        @apply btn h-20 mb-5 text-base lg:text-2xl relative flex justify-start px-10 border-b border-white rounded-lg font-bold leading-none tracking-tight text-white break-all bg-sky-blue;
+        @apply btn h-20 mb-5 text-base lg:text-2xl relative flex justify-start px-10 border-b border-white rounded-lg font-bold leading-none tracking-tight text-white bg-sky-blue;
     }
 
     .list-items-done:hover {
