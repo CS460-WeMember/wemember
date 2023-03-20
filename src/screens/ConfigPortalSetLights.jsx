@@ -5,6 +5,8 @@ import { HuePicker } from 'react-color';
 import { BiRightArrowAlt, BiLeftArrowAlt, BiTimeFive } from "react-icons/bi";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import url from "../global/PocketbaseURL";
+import PocketBase from 'pocketbase';
 
 function ConfigPortalSetLights() {
     const navigate = useNavigate();
@@ -41,8 +43,32 @@ function ConfigPortalSetLights() {
         navigate("/config/setpicture");
     }
 
-    function handleNextButtonClick(event) {
+    async function handleNextButtonClick(event) {
         console.log("next button clicked!");
+        console.log("color: " + color + ", brightness: " + brightness + ", audioVolume: " + audioVolume);
+        const options = 
+        {
+            "light": color.substring(1), 
+            "brightness": "" + brightness, 
+            "sound":  "" + audioVolume
+        }
+
+        const client = new PocketBase(url);
+        const recordId = localStorage.getItem("recordId");
+        if (localStorage.getItem("repeat") == "nil") { //for adhoc
+            const record = await client.collection('adhoc').update(recordId, {
+                "options": options
+            });
+            console.log("pocketbase response: ");
+            console.log(record);
+        } else { //for regular
+            const record = await client.collection('regular').update(recordId, {
+                "options": options
+            });
+            console.log("pocketbase response: ");
+            console.log(record);
+        }
+
         navigate("/config/setothers");
     }
 
