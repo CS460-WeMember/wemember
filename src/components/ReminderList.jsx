@@ -22,10 +22,6 @@ const ReminderList = ({ onItemChange, list }) => {
     navigate("config/settask");
   }
 
-  const showItem = (itemIndex) => {
-    onItemChange(itemIndex);
-  };
-
   let itemList = items.map((item, index) => {
     let afterNoon = "AM";
     const itemHour = (() => {
@@ -48,6 +44,7 @@ const ReminderList = ({ onItemChange, list }) => {
     })();
 
     const [status, setStatus] = useState();
+    const [current, setCurrent] = useState(0);
 
     useEffect(() => {
       const interval = setInterval(() => {
@@ -57,25 +54,43 @@ const ReminderList = ({ onItemChange, list }) => {
           (today.getHours() === item.hour && today.getMinutes() >= item.minute)
         ) {
           // passed; task done
+          if (index == items.length - 1) {
+            setCurrent(0);
+            showItem(0);
+          }
           setStatus(states.passed);
         } else {
           // upcoming; haven't done
+          if (
+            today.getHours() > list[current].hour ||
+            (today.getHours() === list[current].hour &&
+              today.getMinutes() >= list[current].minute)
+          ) {
+            setCurrent(current + 1);
+            showItem(current+1);
+          }
           setStatus(states.upcoming);
         }
       });
       return () => clearInterval(interval);
-    }, [{itemHour}, {itemMinute}]);
+    }, [{ itemHour }, { itemMinute }]);
+
+    const showItem = (current) => {
+      onItemChange(current);
+    };
 
     if (status == states.upcoming) {
       return (
-        <li className="list-items" key={index} onClick={() => showItem(index)}>
+        <li className="list-items" key={index}>
           {itemHour}.{itemMinute} {afterNoon} - {item.title}
         </li>
       );
     } else if (status == states.passed) {
       return (
-        <li className="list-items-done" key={index} onClick={() => showItem(index)}>
-          <p className="flex justify-start w-[75%] truncate overflow-hidden overflow-ellipsis ">{itemHour}.{itemMinute} {afterNoon} - {item.title}</p>
+        <li className="list-items-done" key={index}>
+          <p className="flex justify-start w-[75%] truncate overflow-hidden overflow-ellipsis ">
+            {itemHour}.{itemMinute} {afterNoon} - {item.title}
+          </p>
           <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
         </li>
       );
