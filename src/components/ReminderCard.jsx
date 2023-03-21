@@ -6,13 +6,13 @@ const ReminderCard = ({ item, backEndUrl }) => {
     if (!item.picture) {
       return null;
     } else {
-      return backEndUrl + "/api/files/regular/" + item.id + "/" + item.picture;
+      return backEndUrl + "/api/files/"+ item["@collectionName"] + "/" + item.id + "/" + item.picture;
     }
   }
+  // console.log(item["@collectionName"]);
   
   const image = (item) => {
     const itemPicture = getImageUrl(item);
-    console.log(item.picture);
     if (itemPicture == null) {
       return null;
     } else {

@@ -3,139 +3,122 @@ import ReminderCard from "../components/ReminderCard.jsx";
 import React, { useState, useEffect } from "react";
 import pb from "../api/pocketbase.jsx";
 
-// const regularList = await pb.collection("regular").getFullList({
-//   sort: "-created",
-// });
-
-// regularList.sort((a, b) => {
-//   if (a.hour === b.hour) {
-//     return a.minute - b.minute;
-//   } else {
-//     return a.hour - b.hour;
-//   }
-// });
-
-// const adhocList = await pb.collection("adhoc").getFullList({
-//   sort: "-created",
-// });
-
-// adhocList.sort((a,b) => {
-//   const timeA = new Date(a.when).getTime();
-//   const timeB = new Date(b.when).getTime();
-//   return timeA - timeB;
-// });
-
-// adhocList.forEach(record => {
-//   const [date, time] = record.when.split(" ");
-//   const [hour, minute] = time.split(":");
-//   record.date = date;
-//   record.hour = Number(hour);
-//   record.minute = Number(minute);
-//   delete record.when;
-// });
-
-// const todayAdhoc = adhocList.filter((record) => {
-//   const today = new Date().toJSON().slice(0,10);
-//   return today == record.date;
-// });
-
-// const list = regularList.concat(todayAdhoc);
-
-// list.sort((a, b) => {
-//   if (a.hour === b.hour) {
-//     return a.minute - b.minute;
-//   } else {
-//     return a.hour - b.hour;
-//   }
-// });
-
 function ReminderPortal() {
-  const [index, setIndex] = useState(0);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    console.log("updates to database!");
-  }, [list]);
-
   const fetchList = async () => {
-    const regularList = await pb.collection("regular").getFullList({
-      sort: "-created",
-    });
+    setLoading(true);
+    try {
+      const regularList = await pb.collection("regular").getFullList({
+        sort: "-created",
+      });
+      // console.log("wtf");
 
-    regularList.sort((a, b) => {
-      if (a.hour === b.hour) {
-        return a.minute - b.minute;
-      } else {
-        return a.hour - b.hour;
-      }
-    });
+      regularList.sort((a, b) => {
+        if (a.hour === b.hour) {
+          return a.minute - b.minute;
+        } else {
+          return a.hour - b.hour;
+        }
+      });
 
-    const adhocList = await pb.collection("adhoc").getFullList({
-      sort: "-created",
-    });
+      const adhocList = await pb.collection("adhoc").getFullList({
+        sort: "-created",
+      });
 
-    adhocList.sort((a, b) => {
-      const timeA = new Date(a.when).getTime();
-      const timeB = new Date(b.when).getTime();
-      return timeA - timeB;
-    });
+      adhocList.sort((a, b) => {
+        const timeA = new Date(a.when).getTime();
+        const timeB = new Date(b.when).getTime();
+        return timeA - timeB;
+      });
 
-    adhocList.forEach((record) => {
-      const [date, time] = record.when.split(" ");
-      const [hour, minute] = time.split(":");
-      record.date = date;
-      record.hour = Number(hour);
-      record.minute = Number(minute);
-      delete record.when;
-    });
+      adhocList.forEach((record) => {
+        const [date, time] = record.when.split(" ");
+        const [hour, minute] = time.split(":");
+        record.date = date;
+        record.hour = Number(hour);
+        record.minute = Number(minute);
+        delete record.when;
+      });
 
-    const todayAdhoc = adhocList.filter((record) => {
-      const today = new Date().toJSON().slice(0, 10);
-      return today == record.date;
-    });
+      const todayAdhoc = adhocList.filter((record) => {
+        const today = new Date().toJSON().slice(0, 10);
+        return today == record.date;
+      });
 
-    const data = regularList.concat(todayAdhoc);
+      const data = regularList.concat(todayAdhoc);
 
-    data.sort((a, b) => {
-      if (a.hour === b.hour) {
-        return a.minute - b.minute;
-      } else {
-        return a.hour - b.hour;
-      }
-    });
-
-    setList(data);
-    setLoading(false);
+      data.sort((a, b) => {
+        if (a.hour === b.hour) {
+          return a.minute - b.minute;
+        } else {
+          return a.hour - b.hour;
+        }
+      });
+      setList(data);
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  fetchList();
+  // Define the debounce function to delay the fetchList call.
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        func.apply(null, args);
+      }, delay);
+    };
+  };
 
-  pb.collection("regular").subscribe("*", function (e) {
-    setLoading(true);
+  useEffect(() => {
+    const debouncedFetchList = debounce(fetchList, 500);
+
+    // Subscribe to changes using the debouncedFetchList function.
+    pb.collection("regular").subscribe("*", function (e) {
+      debouncedFetchList();
+    });
+
+    pb.collection("adhoc").subscribe("*", function (e) {
+      debouncedFetchList();
+    });
+
+    // Fetch the list initially.
     fetchList();
-    console.log(e);
-  });
+  }, []);
+
+  const [index, setIndex] = useState(0);
 
   function handleNewItem(itemChange) {
     setIndex(itemChange);
   }
 
-  if (loading) {
-    return null;
-  }
-
   return (
     <div className="grid grid-cols-3 gap-4 bg-white items-center">
-      <div className="col-start-1 grow">
-        <ReminderList onItemChange={handleNewItem} list={list} />
-      </div>
-      <div className="col-span-2 grow justify-self-center">
-        <ReminderCard
-          item={list[index]}
-          backEndUrl={import.meta.env.VITE_API_URL}
-        />
-      </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <div className="col-start-1 grow">
+            <ReminderList onItemChange={handleNewItem} list={list} />
+          </div>
+          <div className="col-span-2 grow justify-self-center">
+            {list.length > 0 ? (
+              <ReminderCard
+                item={list[index]}
+                backEndUrl={import.meta.env.VITE_API_URL}
+              />
+            ) : (
+              <p>No reminders found.</p>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
