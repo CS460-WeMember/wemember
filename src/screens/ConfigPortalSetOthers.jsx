@@ -5,6 +5,8 @@ import "../styles/ConfigPortal.css";
 import { BiRightArrowAlt, BiLeftArrowAlt, BiTimeFive } from "react-icons/bi";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import url from "../global/PocketbaseURL";
+import PocketBase from 'pocketbase';
 
 function ConfigPortalSetTime() {
     const navigate = useNavigate();
@@ -62,7 +64,7 @@ function ConfigPortalSetTime() {
                 <div className="white-grid">
                   <div className="main-input-container" style={{gap:"52px"}}>
 
-                    <div className="task-incomplete-wrapper">
+                    {/* <div className="task-incomplete-wrapper">
                       <text className="question-text">
                         If the task is incomplete, 
                       </text>
@@ -96,7 +98,7 @@ function ConfigPortalSetTime() {
                           after the task was supposed to end.
                         </text>
                       </div>
-                    </div>
+                    </div> */}
 
                     <div className="task-incomplete-wrapper">
                       <text className="question-text">

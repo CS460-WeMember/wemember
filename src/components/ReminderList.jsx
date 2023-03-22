@@ -23,15 +23,15 @@ const ReminderList = ({ onItemChange, list }) => {
   }
 
   let itemList = items.map((item, index) => {
-    let afterNoon = "AM";
+    let afterNoon = "am";
     const itemHour = (() => {
       if (item.hour > 12) {
-        afterNoon = "PM";
+        afterNoon = "pm";
         return item.hour % 12;
       } else if (item.hour < 12) {
         return item.hour;
       } else {
-        afterNoon = "PM";
+        afterNoon = "pm";
         return item.hour;
       }
     })();
@@ -82,15 +82,13 @@ const ReminderList = ({ onItemChange, list }) => {
     if (status == states.upcoming) {
       return (
         <li className="list-items" key={index}>
-          {itemHour}.{itemMinute} {afterNoon} - {item.title}
+          {itemHour}.{itemMinute}{afterNoon} - {item.title}
         </li>
       );
     } else if (status == states.passed) {
       return (
         <li className="list-items-done" key={index}>
-          <p className="flex justify-start w-[75%] truncate overflow-hidden overflow-ellipsis ">
-            {itemHour}.{itemMinute} {afterNoon} - {item.title}
-          </p>
+            {itemHour}.{itemMinute}{afterNoon} - {item.title}
           <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
         </li>
       );
@@ -98,14 +96,14 @@ const ReminderList = ({ onItemChange, list }) => {
   });
 
   return (
-    <div className="list-layout text-white">
-      <div>
-        <h1 className="text-3xl font-bold pt-10">Hello!</h1>
-        <p className="pb-10 ">Here are your tasks for today:</p>
+    <div className="list-layout">
+      <div className="reminder-portal-header">
+        <h1>Hello!</h1>
+        <p className="pb-10">Here are your tasks for today:</p>
       </div>
       <ul>{itemList}</ul>
       <button className="config-btn" onClick={handleAddTask}>
-        Make a new reminder
+            Make a new reminder
       </button>
     </div>
   );

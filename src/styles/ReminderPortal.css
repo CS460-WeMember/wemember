@@ -1,0 +1,18 @@
+.whole-screen{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem; /* or any desired gap value */
+    background-color: white;
+    align-items: center;
+}
+
+.blue-sidebar{
+    grid-column-start: 1;
+    flex-grow: 1;
+}
+
+.white-display-screen{
+    height: 100vh;
+    grid-column: span 2;
+    flex-grow: 1;
+}

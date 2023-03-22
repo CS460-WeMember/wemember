@@ -2,8 +2,11 @@ import ReminderList from "../components/ReminderList.jsx";
 import ReminderCard from "../components/ReminderCard.jsx";
 import React, { useState, useEffect } from "react";
 import pb from "../api/pocketbase.jsx";
+import "../styles/ReminderPortal.css"
 
 function ReminderPortal() {
+
+
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -99,15 +102,15 @@ function ReminderPortal() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4 bg-white items-center">
+    <div className="whole-screen">
       {loading ? (
         <p>Loading...</p>
       ) : (
         <>
-          <div className="col-start-1 grow">
+          <div className="blue-sidebar">
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
-          <div className="col-span-2 grow justify-self-center">
+          <div className="white-display-screen">
             {list.length > 0 ? (
               <ReminderCard
                 item={list[index]}
@@ -117,6 +120,7 @@ function ReminderPortal() {
               <p>No reminders found.</p>
             )}
           </div>
+          
         </>
       )}
     </div>
