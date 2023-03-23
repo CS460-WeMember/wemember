@@ -80,11 +80,6 @@ function ConfigPortalSetTime() {
         }
     }, [date, startTime, endTime, repeat]);
 
-    function handleBackButtonClick(event) {
-        console.log("back button clicked!");
-        navigate("/config/settask");
-    }
-
     function handleNextButtonClick(event) {
         if (dateIsNull) {
             setDateModalIsOpen(true);
@@ -259,13 +254,6 @@ function ConfigPortalSetTime() {
                           </div>
                         </div>
                       </div>
-
-                        <button className="back-button" onClick={handleBackButtonClick}>
-                          <BiLeftArrowAlt className="icon"></BiLeftArrowAlt>
-                          <text className="button-text">
-                            Back
-                          </text>
-                        </button>
 
                         <button className="next-button" onClick={handleNextButtonClick}>
                           <text className="button-text">

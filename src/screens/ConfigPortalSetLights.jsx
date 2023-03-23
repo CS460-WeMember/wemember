@@ -41,11 +41,6 @@ function ConfigPortalSetLights() {
       setAudioVolume(event.target.value);
     }
 
-    function handleBackButtonClick() {
-        console.log("back button clicked!");
-        navigate("/config/setpicture");
-    }
-
     async function handleNextButtonClick() {
         console.log("next button clicked!");
         //format the options JSON object for uploading to DB
@@ -197,18 +192,7 @@ function ConfigPortalSetLights() {
 
                     </div>
 
-
-
-
-
                   </div>
-
-                  <button className="back-button" onClick={handleBackButtonClick}>
-                    <BiLeftArrowAlt className="icon"></BiLeftArrowAlt>
-                    <text className="button-text">
-                      Back
-                    </text>
-                  </button>
 
                   <button className="next-button" onClick={handleNextButtonClick}>
                     <text className="button-text">

@@ -18,12 +18,6 @@ function ConfigPortalSetTime() {
       setSelectedDevice(event.target.value);
     };
 
-    function handleBackButtonClick(event) {
-        console.log("back button clicked!");
-        navigate("/config/setLights");
-    }
-
-
     async function handleFinishedButtonClick(event) {
         console.log("finished button clicked!");
 
@@ -127,13 +121,6 @@ function ConfigPortalSetTime() {
 
 
                   </div>
-
-                  <button className="back-button" onClick={handleBackButtonClick}>
-                    <BiLeftArrowAlt className="icon"></BiLeftArrowAlt>
-                    <text className="button-text">
-                      Back
-                    </text>
-                  </button>
 
                   <button className="next-button" onClick={handleFinishedButtonClick}>
                     <text className="button-text">
