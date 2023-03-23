@@ -4,6 +4,11 @@ import "../styles/ConfigPortal.css";
 import { BiRightArrowAlt, BiLeftArrowAlt } from "react-icons/bi";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Modal from 'react-modal';
+import {ImCross} from "react-icons/im";
+import { BsFillArrowUpLeftSquareFill } from "react-icons/bs";
+import helperimage from "../assets/ConfigScreen_TaskName.png";
+
 
 function ConfigPortalSetTask() {
     const navigate = useNavigate();
@@ -16,22 +21,50 @@ function ConfigPortalSetTask() {
 
     function handleBackButtonClick(event) {
         console.log("back button clicked!");
-        navigate("/")
+        navigate("/");
     }
 
     function handleNextButtonClick(event) {
         console.log("next button clicked!");
-        localStorage.setItem("title", taskName)
-        console.log("Final task name in localStorage: " + localStorage.getItem("title"));
-        navigate("/config/settime");
+
+        //Input validation if title is null
+            //if the taskname is null AND the taskname in storage is null, 
+            //prompt for user to enter a taskname
+        if (taskName === "" && (localStorage.getItem("title") === null || localStorage.getItem("title") === "")) {
+            setModalIsOpen(true);
+            console.log("taskname is empty!");
+        } else {
+            //if input is non-null AND the taskname in storage != the current input, 
+            //put the taskname into storage
+            if (!(taskName === "") && (localStorage.getItem("title") != taskName)) {
+                localStorage.setItem("title", taskName);
+            }
+            console.log("Final task name in localStorage: " + localStorage.getItem("title"));
+            navigate("/config/settime");
+        }
     }
 
-    var helpReceived = sessionStorage.getItem("helpMe");
-
-    console.log(helpReceived);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const openModal = () => {
+      setModalIsOpen(true);
+    }
+    const closeModal = () => {
+      setModalIsOpen(false);
+    }
 
     return(
         <div className="grey-background">
+            <Modal
+                className="input-validation-modal"
+                overlayClassName="input-validation-modal-overlay"
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+            >
+                <h2>Please type what you need to do in this box! :)</h2>
+                <img src={helperimage}></img>
+                <button onClick={closeModal}>Got it!</button>
+            </Modal>
+
             <div className="blue-container">
 
                 <div className="blue-grid">
@@ -39,12 +72,17 @@ function ConfigPortalSetTask() {
                         <ProgressBar setTask="active" setTime="inactive" setPicture="inactive" setLights="inactive" setOthers="inactive"/>
                     </div>
                     <div className="cancel-button-container">
-                        <CancelButton className="cancel-button-positioning"/>
+                        <CancelButton 
+                            className="cancel-button-positioning" 
+                            repeat={localStorage.getItem("repeat")}
+                            recordId = {localStorage.getItem("recordId")}
+                        />
                     </div>
                 </div>
 
                 <div className="semi-circle">
                     <div className="white-grid">
+
 
                         <div className="main-input-container">
                             <div className="set-task-name-container">
@@ -57,6 +95,7 @@ function ConfigPortalSetTask() {
                                     type="text"
                                     id="my-task-name"
                                     value={taskName}
+                                    placeholder={localStorage.getItem("title")}
                                     onChange={handleTaskNameChange}>
                                 </input>
                             </div>

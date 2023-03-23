@@ -7,6 +7,56 @@
     align-items:center;
 }
 
+/*input validation modals*/
+.input-validation-modal-overlay {
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.input-validation-modal {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    align-self: center;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .input-validation-modal h2 {
+    margin-top: 0;
+  }
+  
+  .input-validation-modal button {
+    background-color: #55BDE5;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px 10px;
+  }
+
+  .input-validation-modal img {
+    border: 1px solid lightgray;
+    border-radius: 16px;
+  }
+  
+
 /* styles for the blue portion of the portal*/
 .blue-container {
     background-color:#55BDE5;
@@ -55,6 +105,7 @@
     display:flex;
     justify-content: center;
     align-items: center;
+
 }
 
 .white-grid {
