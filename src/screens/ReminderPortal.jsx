@@ -93,8 +93,10 @@ function ReminderPortal() {
       }, delay);
     };
   };
-  pb.collection("regular").subscribe("*", function (e) {
-    const reminder = e.record;
+
+
+  function regularSubscribe (input) {
+    const reminder = input;
     const today = new Date();
     const tempList = list;
     if (reminder.day == today.getDay() - 1 || reminder.day == -1) {
@@ -115,12 +117,14 @@ function ReminderPortal() {
           return a.hour - b.hour;
         }
       });
-      console.log("subscribe reminder")
+      console.log("subscribe reminder1")
       console.log(list);
       setList(tempList);
   }
+  }
+  pb.collection("regular").subscribe("*", function (e) {
+    console.log("subscribe");
   });
-
   useEffect(() => {
   //   const debouncedFetchList = debounce(fetchList, 500);
 
