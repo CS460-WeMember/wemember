@@ -4,8 +4,10 @@ import { BsFillCheckCircleFill } from "react-icons/bs";
 import React, { useState, useEffect } from "react";
 
 const states = {
-  upcoming: 0,
-  passed: 1,
+    done: 0,
+    passed: 1,
+    current: 2,
+    upcoming: 3
 };
 
 const ReminderList = ({ onItemChange, list }) => {
@@ -44,24 +46,28 @@ const ReminderList = ({ onItemChange, list }) => {
     })();
 
     const [status, setStatus] = useState();
-    const [current, setCurrent] = useState(0);
+    const [current, setCurrent] = useState(0); //current is a pointer in the list of reminders
 
     useEffect(() => {
       const interval = setInterval(() => {
         const today = new Date();
+        /*--------------------------
+        STATE: PASSED
+        --------------------------*/
         if (
           today.getHours() > item.hour ||
           (today.getHours() === item.hour && today.getMinutes() >= item.minute)
         ) {
-          // passed; task done
           if (index == items.length - 1) {
             setCurrent(0);
             showItem(0);
           }
           setStatus(states.passed);
-        } else {
-          // upcoming; haven't done
-          if (
+
+        /*--------------------------
+        STATE: UPCOMING
+        --------------------------*/
+        } else if (
             today.getHours() > list[current].hour ||
             (today.getHours() === list[current].hour &&
               today.getMinutes() >= list[current].minute)
@@ -71,7 +77,7 @@ const ReminderList = ({ onItemChange, list }) => {
           }
           setStatus(states.upcoming);
         }
-      });
+      );
       return () => clearInterval(interval);
     }, [{ itemHour }, { itemMinute }]);
 
@@ -81,7 +87,7 @@ const ReminderList = ({ onItemChange, list }) => {
 
     if (status == states.upcoming) {
       return (
-        <li className="list-items" key={index}>
+        <li className="list-items-upcoming" key={index}>
           {itemHour}.{itemMinute}{afterNoon} - {item.title}
         </li>
       );

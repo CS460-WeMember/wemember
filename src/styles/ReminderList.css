@@ -24,7 +24,7 @@ p{
 }
 
 
-.list-items {
+.list-items-upcoming {
 height: 4.75rem;
 margin-bottom: 1.25rem;
 line-height: 1.5;
@@ -68,11 +68,11 @@ padding-right: 2rem;
 border: 1.5px solid white
 }
 
-.list-items-done:hover {
+/* .list-items-done:hover {
 background-color: white;
 color: #93C5FD;
 border-color: white;
-}
+} */
 
 .list-layout {
 height: 100vh;
