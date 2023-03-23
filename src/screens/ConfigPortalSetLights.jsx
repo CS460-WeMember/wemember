@@ -9,6 +9,9 @@ import url from "../global/PocketbaseURL";
 import PocketBase from 'pocketbase';
 
 function ConfigPortalSetLights() {
+    const repeat = localStorage.getItem("repeat");
+    const recordId = localStorage.getItem("recordId");
+    console.log("repeat: " + repeat + ", recordId: " + recordId);
     const navigate = useNavigate();
 
     const [color, setColor] = useState('#FFE600'); // set the initial color to yellow
@@ -113,7 +116,11 @@ function ConfigPortalSetLights() {
                   />
                 </div>
                 <div className="cancel-button-container">
-                  <CancelButton className="cancel-button-positioning"/>
+                    <CancelButton 
+                        className="cancel-button-positioning" 
+                        repeat={localStorage.getItem("repeat")}
+                        recordId = {localStorage.getItem("recordId")}
+                    />
                 </div>
               </div>
 

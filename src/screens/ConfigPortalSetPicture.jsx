@@ -95,7 +95,11 @@ function ConfigPortalSetPicture() {
                   />
                 </div>
                 <div className="cancel-button-container">
-                  <CancelButton className="cancel-button-positioning"/>
+                  <CancelButton 
+                    className="cancel-button-positioning" 
+                    repeat={localStorage.getItem("repeat")}
+                    recordId = {localStorage.getItem("recordId")}
+                    />
                 </div>
               </div>
 

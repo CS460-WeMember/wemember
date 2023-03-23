@@ -1,10 +1,11 @@
 import CancelButton from "../components/CancelButton";
 import ProgressBar from "../components/ProgressBar";
-
+import Modal from "react-modal";
 import "../styles/ConfigPortal.css";
 import { BiRightArrowAlt, BiLeftArrowAlt, BiTimeFive } from "react-icons/bi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 
 function ConfigPortalSetTime() {
     const navigate = useNavigate();
@@ -29,24 +30,129 @@ function ConfigPortalSetTime() {
       setRepeat(event.target.value);
     };
 
+    //check if the inputs are null, this is for the input validation modal
+    const [dateIsNull, setDateIsNull] = useState(false);
+    const [startTimeIsNull, setStartTimeIsNull] = useState(false);
+    const [endTimeIsNull, setEndTimeIsNull] = useState(false);
+    const [repeatIsNull, setRepeatIsNull] = useState(false);
+
+    /*Anything related to the input validation modal*/
+    const [dateModalIsOpen, setDateModalIsOpen] = useState(false);
+    function closeDateModal() {
+        setDateModalIsOpen(false);
+    }
+    const [startTimeModalIsOpen, setStartTimeModalIsOpen] = useState(false);
+    function closeStartTimeModal() {
+        setStartTimeModalIsOpen(false);
+    }
+    const [endTimeModalIsOpen, setEndTimeModalIsOpen] = useState(false);
+    function closeEndTimeModal() {
+        setEndTimeModalIsOpen(false);
+    }
+    const [repeatModalIsOpen, setRepeatModalIsOpen] = useState(false);
+    function closeRepeatModal() {
+        setRepeatModalIsOpen(false);
+    }
+
+    useEffect(() => {
+        if (date === "" || date=== null) {
+            setDateIsNull(true);
+        } else {
+            setDateIsNull(false);
+        }
+
+        if (startTime === "" || startTime=== null) {
+            setStartTimeIsNull(true);
+        } else {
+            setStartTimeIsNull(false);
+        }
+
+        if (endTime === "" || endTime=== null) {
+            setEndTimeIsNull(true);
+        } else {
+            setEndTimeIsNull(false);
+        }
+
+        if (repeat === "" || repeat=== null) {
+            setRepeatIsNull(true);
+        } else {
+            setRepeatIsNull(false);
+        }
+    }, [date, startTime, endTime, repeat]);
+
     function handleBackButtonClick(event) {
         console.log("back button clicked!");
         navigate("/config/settask");
     }
 
     function handleNextButtonClick(event) {
-        console.log("next button clicked!");
-        navigate("/config/setpicture");
-        localStorage.setItem("date", date);
-        localStorage.setItem("startTime", startTime);
-        localStorage.setItem("endTime", endTime);
-        localStorage.setItem("repeat", repeat);
-        console.log("date: " + localStorage.getItem("date") + ", start time: " +  localStorage.getItem("startTime") + ", end time: " +  localStorage.getItem("endTime")  + ", repeat: " +  localStorage.getItem("repeat") );
-
+        if (dateIsNull) {
+            setDateModalIsOpen(true);
+        } else if (startTimeIsNull) {
+            setStartTimeModalIsOpen(true);
+        } else if (endTimeIsNull) {
+            setEndTimeModalIsOpen(true);
+        } else if (repeatIsNull) {
+            setRepeatModalIsOpen(true);
+        } else {
+            console.log("next button clicked!");
+            navigate("/config/setpicture");
+            localStorage.setItem("date", date);
+            localStorage.setItem("startTime", startTime);
+            localStorage.setItem("endTime", endTime);
+            localStorage.setItem("repeat", repeat);
+            console.log("date: " + localStorage.getItem("date") + ", start time: " +  localStorage.getItem("startTime") + ", end time: " +  localStorage.getItem("endTime")  + ", repeat: " +  localStorage.getItem("repeat") );
+        }
     }
+    
 
     return(
         <div className="grey-background">
+
+            <Modal
+                className="input-validation-modal"
+                overlayClassName="input-validation-modal-overlay"
+                isOpen={dateModalIsOpen}
+                onRequestClose={closeDateModal}
+            >
+                <h2>Please enter the date!</h2>
+                {/* <img src={helperimage}></img> */}
+                <button onClick={closeDateModal}>Got it!</button>
+            </Modal>
+
+            <Modal
+                className="input-validation-modal"
+                overlayClassName="input-validation-modal-overlay"
+                isOpen={startTimeModalIsOpen}
+                onRequestClose={closeStartTimeModal}
+            >
+                <h2>Please enter the start time!</h2>
+                {/* <img src={helperimage}></img> */}
+                <button onClick={closeStartTimeModal}>Got it!</button>
+            </Modal>
+
+            <Modal
+                className="input-validation-modal"
+                overlayClassName="input-validation-modal-overlay"
+                isOpen={endTimeModalIsOpen}
+                onRequestClose={closeEndTimeModal}
+            >
+                <h2>Please enter the end time!</h2>
+                {/* <img src={helperimage}></img> */}
+                <button onClick={closeEndTimeModal}>Got it!</button>
+            </Modal>
+
+            <Modal
+                className="input-validation-modal"
+                overlayClassName="input-validation-modal-overlay"
+                isOpen={repeatModalIsOpen}
+                onRequestClose={closeRepeatModal}
+            >
+                <h2>Please enter how often you would like this reminder to repeat!</h2>
+                {/* <img src={helperimage}></img> */}
+                <button onClick={closeRepeatModal}>Got it!</button>
+            </Modal>
+
             <div className="blue-container">
 
                 <div className="blue-grid">
@@ -60,7 +166,11 @@ function ConfigPortalSetTime() {
                     />
                   </div>
                   <div className="cancel-button-container">
-                    <CancelButton className="cancel-button-positioning"/>
+                    <CancelButton 
+                        className="cancel-button-positioning" 
+                        repeat={localStorage.getItem("repeat")}
+                        recordId = {localStorage.getItem("recordId")}
+                    />
                   </div>
                 </div>
 
@@ -103,6 +213,7 @@ function ConfigPortalSetTime() {
                                   name="start-time" 
                                   style={{outline:'none'}}
                                   onChange={handleStartChange}
+                                  placeholder={localStorage.getItem("startTime")}
                                 />
                                 <BiTimeFive className="icon"/>
                               </div>
