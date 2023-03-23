@@ -10,11 +10,6 @@ import PocketBase from 'pocketbase';
 function ConfigPortalSetPicture() {
     const navigate = useNavigate();
 
-    function handleBackButtonClick(event) {
-        console.log("back button clicked!");
-        navigate("/config/settime");
-    }
-
     async function handleNextButtonClick(event) {
         console.log("next button clicked! Time to upload the image");
 
@@ -115,13 +110,6 @@ function ConfigPortalSetPicture() {
                       </div>
                     </div>
                   </div>
-
-                  <button className="back-button" onClick={handleBackButtonClick}>
-                    <BiLeftArrowAlt className="icon"></BiLeftArrowAlt>
-                    <text className="button-text">
-                      Back
-                    </text>
-                  </button>
 
                   <button className="next-button" onClick={handleNextButtonClick}>
                     <text className="button-text">

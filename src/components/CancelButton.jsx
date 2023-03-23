@@ -7,17 +7,14 @@ import url from "../global/PocketbaseURL";
 
 
 function CancelButton({style, repeat, recordId}) {
-    console.log(repeat === "null");
-    console.log(repeat !== "null");
-    console.log(repeat + typeof repeat);
-    console.log("youre in the cancel button jsx!");
-    console.log("repeat: " + repeat + ", recordId: " + recordId);
     repeat = localStorage.getItem("repeat");
     recordId = localStorage.getItem("recordId");
     const navigate = useNavigate();
 
+    console.log("recordId: " + recordId);
+
     async function handleClick(event) {
-        if ((repeat !== null)) {
+        if (!(repeat === "null") && !(recordId ==="null")) {
             var collection = "";
             if (repeat === "nil") {
                 collection = "adhoc";
