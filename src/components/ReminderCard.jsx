@@ -58,7 +58,7 @@ const ReminderCard = ({ item, backEndUrl }) => {
   const playAudio = () => {
     audio.play();
   };
-
+window.setTimeout
   const image = (item) => {
     const itemPicture = getImageUrl(item);
     if (itemPicture == null) {

@@ -2,68 +2,83 @@ import ReminderList from "../components/ReminderList.jsx";
 import ReminderCard from "../components/ReminderCard.jsx";
 import React, { useState, useEffect } from "react";
 import pb from "../api/pocketbase.jsx";
-import "../styles/ReminderPortal.css"
+import "../styles/ReminderPortal.css";
 
 function ReminderPortal() {
-
-
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [listIndex, setListIndex] = useState(0); //index of reminder to be displayed reminder card
+
 
   const fetchList = async () => {
+    //get regular and adhoc lists from pocketbase
     setLoading(true);
-    try {
-      const regularList = await pb.collection("regular").getFullList({
-        sort: "-created",
-      });
-      // console.log("wtf");
+    const regularList = await pb.collection("regular").getFullList({
+      sort: "-created",
+    });
+    const adhocList = await pb.collection("adhoc").getFullList({
+      sort: "+when",
+    });
 
-      regularList.sort((a, b) => {
-        if (a.hour === b.hour) {
-          return a.minute - b.minute;
-        } else {
-          return a.hour - b.hour;
-        }
-      });
+    //sort regularList based on time
 
-      const adhocList = await pb.collection("adhoc").getFullList({
-        sort: "-created",
-      });
+    //change "when" field into date, hour and minute
+    adhocList.forEach((record) => {
+      const [date, time] = record.when.split(" ");
+      const [hour, minute] = time.split(":");
+      record.date = date;
+      record.hour = Number(hour);
+      record.minute = Number(minute);
+      record.reminderDate = new Date(record.when);
+    });
+    console.log("adhocList");
+    console.log(adhocList);
 
-      adhocList.sort((a, b) => {
-        const timeA = new Date(a.when).getTime();
-        const timeB = new Date(b.when).getTime();
-        return timeA - timeB;
-      });
+    var list = [];
+    const today = new Date();
 
-      adhocList.forEach((record) => {
-        const [date, time] = record.when.split(" ");
-        const [hour, minute] = time.split(":");
-        record.date = date;
-        record.hour = Number(hour);
-        record.minute = Number(minute);
-        delete record.when;
-      });
+    adhocList.forEach((record) => {
+      if (record.reminderDate.getDate() == today.getDate() &&
+        record.reminderDate.getMonth() == today.getMonth()) {
+          list.push(record);
+      }
+    });
 
-      const todayAdhoc = adhocList.filter((record) => {
-        const today = new Date().toJSON().slice(0, 10);
-        return today == record.date;
-      });
+    console.log(list);
+    regularList.forEach((record) => {
+      if (record.day == today.getDay() - 1 || record.day == -1) {
+          list.push(record);
+      }
+    });
 
-      const data = regularList.concat(todayAdhoc);
+    list.sort((a, b) => {
+      if (a.hour === b.hour) {
+        return a.minute - b.minute;
+      } else {
+        return a.hour - b.hour;
+      }
+    });
 
-      data.sort((a, b) => {
-        if (a.hour === b.hour) {
-          return a.minute - b.minute;
-        } else {
-          return a.hour - b.hour;
-        }
-      });
-      setList(data);
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
+    list.forEach((reminder) => {
+      console.log("today hour" + today.getHours() + "reminder hour" + reminder.hour);
+      if (
+        today.getHours() > reminder.hour ||
+        (today.getHours() == reminder.hour &&
+          today.getMinutes() > reminder.hour)
+      ) {
+        reminder.state = "passed";
+      } else {
+        reminder.state = "upcoming";
+      }
+    });
+
+    var i = 0;
+    while (list[i].state == "passed") {
+      i++;
     }
+    setListIndex(i + 1);
+    setList(list);
+    setLoading(false);
   };
 
   // Define the debounce function to delay the fetchList call.
@@ -78,22 +93,54 @@ function ReminderPortal() {
       }, delay);
     };
   };
+  pb.collection("regular").subscribe("*", function (e) {
+    const reminder = e.record;
+    const today = new Date();
+    const tempList = list;
+    if (reminder.day == today.getDay() - 1 || reminder.day == -1) {
+      if (
+        today.getHours() > reminder.hour ||
+        (today.getHours() == reminder.hour &&
+          today.getMinutes() > reminder.hour)
+      ) {
+        reminder.state = "passed";
+      } else {
+        reminder.state = "upcoming";
+      }
+      tempList.push(reminder);
+      tempList.sort((a, b) => {
+        if (a.hour === b.hour) {
+          return a.minute - b.minute;
+        } else {
+          return a.hour - b.hour;
+        }
+      });
+      console.log("subscribe reminder")
+      console.log(list);
+      setList(tempList);
+  }
+  });
 
   useEffect(() => {
-    const debouncedFetchList = debounce(fetchList, 500);
+  //   const debouncedFetchList = debounce(fetchList, 500);
 
-    // Subscribe to changes using the debouncedFetchList function.
-    pb.collection("regular").subscribe("*", function (e) {
-      debouncedFetchList();
-    });
+  //   Subscribe to changes using the debouncedFetchList function.
 
-    pb.collection("adhoc").subscribe("*", function (e) {
-      debouncedFetchList();
-    });
 
-    // Fetch the list initially.
-    fetchList();
-  }, []);
+  //   pb.collection("regular").subscribe("*", function (e) {
+  //     debouncedFetchList();
+  //   });
+
+  //   pb.collection("adhoc").subscribe("*", function (e) {
+  //     debouncedFetchList();
+  //   });
+
+
+
+
+  //   Fetch the list initially.
+     fetchList();
+   }, []);
 
   const [index, setIndex] = useState(0);
 
@@ -120,7 +167,6 @@ function ReminderPortal() {
               <p>No reminders found.</p>
             )}
           </div>
-          
         </>
       )}
     </div>
