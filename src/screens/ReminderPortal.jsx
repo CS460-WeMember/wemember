@@ -3,6 +3,7 @@ import ReminderCard from "../components/ReminderCard.jsx";
 import React, { useState, useEffect } from "react";
 import pb from "../api/pocketbase.jsx";
 import "../styles/ReminderPortal.css"
+import {BiCheck} from "react-icons/bi";
 
 function ReminderPortal() {
 
@@ -12,58 +13,70 @@ function ReminderPortal() {
 
   const fetchList = async () => {
     setLoading(true);
-    try {
-      const regularList = await pb.collection("regular").getFullList({
-        sort: "-created",
-      });
-      // console.log("wtf");
+    //get regular and adhoc lists from pocketbase
+    const regularList = await pb.collection("regular").getFullList({
+      sort: "-created",
+    });
+    const adhocList = await pb.collection("adhoc").getFullList({
+      sort: "+when",
+    });
 
-      regularList.sort((a, b) => {
-        if (a.hour === b.hour) {
-          return a.minute - b.minute;
-        } else {
-          return a.hour - b.hour;
-        }
-      });
+    //sort regularList based on time
 
-      const adhocList = await pb.collection("adhoc").getFullList({
-        sort: "-created",
-      });
+    //change "when" field into date, hour and minute
+    adhocList.forEach((record) => {
+      const [date, time] = record.when.split(" ");
+      const [hour, minute] = time.split(":");
+      record.date = date;
+      record.hour = Number(hour);
+      record.minute = Number(minute);
+      record.reminderDate = new Date(record.when);
+    });
+    console.log("adhocList");
+    console.log(adhocList);
 
-      adhocList.sort((a, b) => {
-        const timeA = new Date(a.when).getTime();
-        const timeB = new Date(b.when).getTime();
-        return timeA - timeB;
-      });
+    var list = [];
+    const today = new Date();
 
-      adhocList.forEach((record) => {
-        const [date, time] = record.when.split(" ");
-        const [hour, minute] = time.split(":");
-        record.date = date;
-        record.hour = Number(hour);
-        record.minute = Number(minute);
-        delete record.when;
-      });
+    adhocList.forEach((record) => {
+      if (record.reminderDate.getDate() == today.getDate() &&
+        record.reminderDate.getMonth() == today.getMonth()) {
+          list.push(record);
+      }
+    });
 
-      const todayAdhoc = adhocList.filter((record) => {
-        const today = new Date().toJSON().slice(0, 10);
-        return today == record.date;
-      });
+    console.log(list);
+    regularList.forEach((record) => {
+      if (record.day == today.getDay() - 1 || record.day == -1) {
+          list.push(record);
+      }
+    });
 
-      const data = regularList.concat(todayAdhoc);
+    list.sort((a, b) => {
+      if (a.hour === b.hour) {
+        return a.minute - b.minute;
+      } else {
+        return a.hour - b.hour;
+      }
+    });
 
-      data.sort((a, b) => {
-        if (a.hour === b.hour) {
-          return a.minute - b.minute;
-        } else {
-          return a.hour - b.hour;
-        }
-      });
-      setList(data);
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
-    }
+    list.forEach((reminder) => {
+      console.log("today hour" + today.getHours() + "reminder hour" + reminder.hour);
+      if (
+        today.getHours() > reminder.hour ||
+        (today.getHours() == reminder.hour &&
+          today.getMinutes() > reminder.hour)
+      ) {
+        reminder.state = "passed";
+      } else {
+        reminder.state = "upcoming";
+      }
+    });
+    setList(list);
+    setLoading(false);
+    console.log("====================================");
+    console.log(list);
+    console.log("====================================");
   };
 
   // Define the debounce function to delay the fetchList call.
@@ -84,7 +97,32 @@ function ReminderPortal() {
 
     // Subscribe to changes using the debouncedFetchList function.
     pb.collection("regular").subscribe("*", function (e) {
-      debouncedFetchList();
+      const reminder = e.record;
+      const today = new Date();
+      const tempList = list;
+      if (reminder.day == today.getDay() - 1 || reminder.day == -1) {
+        if (
+          today.getHours() > reminder.hour ||
+          (today.getHours() == reminder.hour &&
+            today.getMinutes() > reminder.hour)
+        ) {
+          reminder.state = "passed";
+        } else {
+          reminder.state = "upcoming";
+        }
+        tempList.push(reminder);
+        tempList.sort((a, b) => {
+          if (a.hour === b.hour) {
+            return a.minute - b.minute;
+          } else {
+            return a.hour - b.hour;
+          }
+        });
+        console.log("subscribe reminder")
+        console.log(list);
+        setList(tempList);
+    }
+  
     });
 
     pb.collection("adhoc").subscribe("*", function (e) {
@@ -101,6 +139,36 @@ function ReminderPortal() {
     setIndex(itemChange);
   }
 
+  function handleTaskDone(event) {
+    console.log("done button clicked!");
+  }
+
+  function getImageUrl(item) {
+    if (!item.picture) {
+      return null;
+    } else {
+      return import.meta.env.VITE_API_URL + "/api/files/"+ item["@collectionName"] + "/" + item.id + "/" + item.picture;
+    }
+  }
+
+
+  const image = (item) => {
+    const itemPicture = getImageUrl(item);
+    if (itemPicture == null) {
+      return null;
+    } else {
+      return (
+        <div className="reminder-image-container">
+            <img
+                src={itemPicture}
+            />
+        </div>
+      );
+    }
+  };
+
+  
+
   return (
     <div className="whole-screen">
       {loading ? (
@@ -112,10 +180,22 @@ function ReminderPortal() {
           </div>
           <div className="white-display-screen">
             {list.length > 0 ? (
-              <ReminderCard
-                item={list[index]}
-                backEndUrl={import.meta.env.VITE_API_URL}
-              />
+              <div className="reminder-main-container">
+      {image(list[index])}
+      {/* border flex aspect-2/1 min-w-[300px] w-3/12 md:w-1/2 lg:w-7/12 border-light-blue rounded-lg shadow-lg mt-10 rounded-b-lg text-dark-blue justify-center items-center */}
+      <div className="reminder-text-container">
+        <h1 className="reminder-text">
+          {list[index].title} 
+          {/* <Batch itemHour={item.hour} itemMin ={item.minute}/> */}
+        </h1>
+      </div>
+      <button className="done-btn" onClick={handleTaskDone}>
+        <BiCheck className="done-btn-check-icon"></BiCheck>
+        <text>
+          I am done!
+        </text>
+      </button>
+    </div>
             ) : (
               <p>No reminders found.</p>
             )}
