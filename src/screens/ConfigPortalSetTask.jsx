@@ -28,17 +28,11 @@ function ConfigPortalSetTask() {
         console.log("next button clicked!");
 
         //Input validation if title is null
-            //if the taskname is null AND the taskname in storage is null, 
-            //prompt for user to enter a taskname
-        if (taskName === "" && (localStorage.getItem("title") === null || localStorage.getItem("title") === "")) {
+        if (taskName === "") {
             setModalIsOpen(true);
             console.log("taskname is empty!");
         } else {
-            //if input is non-null AND the taskname in storage != the current input, 
-            //put the taskname into storage
-            if (!(taskName === "") && (localStorage.getItem("title") != taskName)) {
-                localStorage.setItem("title", taskName);
-            }
+            localStorage.setItem("title", taskName);
             console.log("Final task name in localStorage: " + localStorage.getItem("title"));
             navigate("/config/settime");
         }
@@ -95,7 +89,6 @@ function ConfigPortalSetTask() {
                                     type="text"
                                     id="my-task-name"
                                     value={taskName}
-                                    placeholder={localStorage.getItem("title")}
                                     onChange={handleTaskNameChange}>
                                 </input>
                             </div>

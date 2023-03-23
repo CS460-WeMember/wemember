@@ -11,8 +11,10 @@ function CancelButton({style, repeat, recordId}) {
     recordId = localStorage.getItem("recordId");
     const navigate = useNavigate();
 
+    console.log("recordId: " + recordId);
+
     async function handleClick(event) {
-        if (!(repeat === "null")) {
+        if (!(repeat === "null") && !(recordId ==="null")) {
             var collection = "";
             if (repeat === "nil") {
                 collection = "adhoc";

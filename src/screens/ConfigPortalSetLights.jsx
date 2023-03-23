@@ -176,7 +176,7 @@ function ConfigPortalSetLights() {
                             Add an audio clip: 
                           </text>
                           <div className="pick-audio-button">
-                            <input type="file" accept=".mp3/*" id="audio" onChange={handleAudioChange} />
+                            <input type="file" accept=".mp3" id="audio" onChange={handleAudioChange} />
                           </div>
                           <audio controls src={audioPreview}>
                                 Your browser does not support the audio tag.

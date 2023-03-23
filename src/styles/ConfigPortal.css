@@ -311,7 +311,7 @@ Styles for setting other options
     display:flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 32px;
 }
 
 .task-incomplete-input-container{
@@ -321,31 +321,24 @@ Styles for setting other options
     gap: 12px;
 }
 
-.time-amount-input-field{
-    height:48px;
-    width: 48px;
+.device-options-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+}
+
+.device-options-container label{
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-
+    gap: 8px;
 }
 
-.time-unit-input-field{
-    width:auto;
-    height:48px;
-    padding:12px;
-    border-radius: 8px;
-    border: 1px solid #E0E0E0;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-    display:flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap:8px;
+.device-options-container label text{
+    color: #146887;
+    font-size: 18px;
 }
 
 /* back button, next button and icon styles */
