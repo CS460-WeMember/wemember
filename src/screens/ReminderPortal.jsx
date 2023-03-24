@@ -55,17 +55,26 @@ function ReminderPortal() {
       } else {
         list[i].state = "upcoming";
       }
-      if ( 
-        //if first or last reminder, or if previous reminder is passed AND the reminder's
+      if (i == 0 && list.length == 1) { //list is of length 1
+        list[i].state = "current";
+        setIndex(i);
+      } else if (i == 0 && list.length > 1) {
+        if (list[i + 1].state == "upcoming") {
+          list[i].state = "current";
+          setIndex(i);
+        }
+      } else if (  
+        //if previous reminder is passed AND the reminder's
         //state is upcoming, set the previous reminder to current, and update the index
-        (i == 0 || list[i - 1].state == "passed" ) &&
-        list[i].state == "upcoming"
+        (list[i - 1].state == "passed"  &&
+        list[i].state == "upcoming")
       ) {
         list[i - 1].state = "current";
         setIndex(i-1);
-
+        
+        //else if the reminder is the last reminder, set the state to current. 
       } else if (
-        i == list.length - 1
+        i == list.length - 1 && list[i-1].state == "passed"
       ) {
         list[i].state = "current";
         setIndex(i);
