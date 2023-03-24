@@ -143,12 +143,13 @@ function ReminderPortal() {
         (list[i - 1].state == "passed" || list[i - 1].state == "done") &&
         list[i].state == "upcoming"
       ) {
-        if (list[i - 1].state == "passed") {
-          list[i - 1].state = "current";
-          setDone(false);
-        } else {
+        console.log(list[i].title)
+        if (list[i - 1].state == "done") {
           list[i - 1].state = "done";
           setDone(true);
+        } else {
+          list[i - 1].state = "current";
+          setDone(false);
         }
         setIndex(i - 1);
 
@@ -216,6 +217,47 @@ function ReminderPortal() {
     setList(list);
     setLoading(false);
   };
+
+  for (var i = 0; i < list.length; i++) {
+
+    if (list[i].state == "upcoming") {
+      const timeoutFunction = (i, time) => {
+        setIndex(i);
+        setDone(false);
+        fetchList();
+        if (list.length > 1 && list[i-1].state == "current") {
+          list[i-1].state = "passed";
+        }
+        list[i].state = "current";
+        console.log("timeout function" + time);
+      };
+      var time = 0;
+
+      if (list[i]["@collectionName"] == "adhoc") {
+        time = new Date(list[i].when) - new Date().getTime();
+        console.log(time);
+        window.setTimeout(timeoutFunction, time, i, time);
+      }
+
+      if (list[i]["@collectionName"] == "regular"){
+        // const string = "" + new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + "T" + list[i].hour + ":" + list[i].minute + ":00Z";
+        // console.log(string);
+        // console.log(new Date(string).toDateString + new Date(string).toTimeString());
+        if (list[i].hour == new Date().getHours()) {
+          time = (list[i].minute - new Date().getMinutes())*30000;
+          console.log("1");
+        } else if (list[i].minute < new Date().getMinutes()) {
+          time = ((list[i].hour - new Date().getHours() + 1) * 60 + list[i].minute + (60 - new Date().getMinutes())) * 30000;
+          console.log("2");
+        } else {
+          time = ((list[i].hour - new Date().getHours() + 1) * 60 +  (list[i].minute - new Date().getMinutes)) * 30000;
+          console.log("3");
+        }
+        console.log(time);
+        window.setTimeout(timeoutFunction, time, i, time);
+      }
+    }
+  }
 
   useEffect(() => {
     fetchList();
