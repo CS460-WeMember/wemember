@@ -13,7 +13,15 @@ function ReminderPortal() {
     if (!item.audio) {
       return null;
     } else {
-      return import.meta.env.VITE_API_URL + "/api/files/"+ item["@collectionName"] + "/" + item.id + "/" + item.audio;
+      return (
+        import.meta.env.VITE_API_URL +
+        "/api/files/" +
+        item["@collectionName"] +
+        "/" +
+        item.id +
+        "/" +
+        item.audio
+      );
     }
   }
   const [audio, setAudio] = useState(new Audio());
@@ -21,19 +29,37 @@ function ReminderPortal() {
   const playAudio = () => {
     if (audio) {
       if (list[index].options.sound === "off") {
-        audio.volume = soundLevel.off
+        audio.volume = soundLevel.off;
       } else if (list[index].options.sound === "low") {
-        audio.volume = soundLevel.low
+        audio.volume = soundLevel.low;
       } else if (list[index].options.sound === "mid") {
-        audio.volume = soundLevel.mid
+        audio.volume = soundLevel.mid;
       } else {
-        audio.volume = soundLevel.high
+        audio.volume = soundLevel.high;
       }
       setAudio(audio);
     }
     audio.play();
-
   };
+
+  function getStateFromPb(item) {
+    const now = new Date();
+    now.setUTCHours(now.getUTCHours() + 8)
+
+    if (item["@collectionName"] == 'regular') {
+      const finished = item.last_finished;
+      if (finished == '' || finished.split(' ')[0] < now.toISOString().split('T')[0]) {
+        return false;
+      }
+    } else {
+      const finished = item.finished;
+      if (finished == '') {
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   function assignState(list) {
     const today = new Date();
@@ -41,7 +67,10 @@ function ReminderPortal() {
       // if ((today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) || list[i].state == "current-after") {
       //   list[i].state = "current-after";
       // }
-      if (today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) {
+      if (
+        today.getHours() == list[i].hour &&
+        today.getMinutes() == list[i].minute
+      ) {
         // console.log("play audio");
         // setAudio(new Audio(getAudioUrl(list[i])));
         // playAudio();
@@ -53,11 +82,13 @@ function ReminderPortal() {
       if (
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
-          today.getMinutes() >= list[i].minute)
-      ) {
-        list[i].state = "passed";
-
-      //else, set the state to upcoming
+          today.getMinutes() > list[i].minute)
+      ) {//if current time is more than the task time, set state to passed
+        if (getStateFromPb(list[i])) {
+          list[i].state = "done";
+        } else {
+          list[i].state = "passed";
+        }
       } else {
         list[i].state = "upcoming";
       }
@@ -100,6 +131,7 @@ function ReminderPortal() {
         list[i].state = "current";
         setIndex(i);
       }
+      console.log(list[i].state);
     }
   }
 
@@ -122,8 +154,6 @@ function ReminderPortal() {
       record.minute = Number(minute);
       record.reminderDate = new Date(record.when);
     });
-    console.log("adhocList");
-    console.log(adhocList);
 
     var list = [];
     const today = new Date();
@@ -137,9 +167,9 @@ function ReminderPortal() {
       }
     });
 
-    console.log(list);
     regularList.forEach((record) => {
       if (record.day == today.getDay() - 1 || record.day == -1) {
+        record.date = today.toISOString().split('T')[0];
         list.push(record);
       }
     });
@@ -151,15 +181,10 @@ function ReminderPortal() {
         return a.hour - b.hour;
       }
     });
-
     assignState(list);
     setList(list);
     setLoading(false);
-    console.log("====================================");
-    console.log(list);
-    console.log("====================================");
   };
-
 
   useEffect(() => {
     fetchList();
@@ -172,7 +197,6 @@ function ReminderPortal() {
       fetchList();
     });
   }, []);
-
 
   function handleNewItem(itemChange) {
     setIndex(itemChange);
