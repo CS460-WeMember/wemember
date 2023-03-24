@@ -53,7 +53,7 @@ function ReminderPortal() {
       if (
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
-          today.getMinutes() > list[i].minute)
+          today.getMinutes() >= list[i].minute)
       ) {
         list[i].state = "passed";
 
