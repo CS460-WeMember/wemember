@@ -130,27 +130,6 @@ function ReminderPortal() {
     console.log("====================================");
   };
 
-  // Define the debounce function to delay the fetchList call.
-  const debounce = (func, delay) => {
-    let timeoutId;
-    return (...args) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      timeoutId = setTimeout(() => {
-        func.apply(null, args);
-      }, delay);
-    };
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLoading(true);
-      debounce(fetchList(), 500);
-      setLoading(false);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     fetchList();
