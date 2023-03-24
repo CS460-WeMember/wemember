@@ -82,7 +82,7 @@ function ReminderPortal() {
       if (
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
-          today.getMinutes() > list[i].minute)
+          today.getMinutes() >= list[i].minute)
       ) {//if current time is more than the task time, set state to passed
         if (getStateFromPb(list[i])) {
           list[i].state = "done";
@@ -202,7 +202,12 @@ function ReminderPortal() {
     setIndex(itemChange);
   }
 
+  
+
   function handleTaskDone(event) {
+    const now = new Date();
+    now.setUTCHours(now.getUTCHours() + 8);
+    console.log(now.toUTCString());
     console.log("done button clicked!");
   }
 
