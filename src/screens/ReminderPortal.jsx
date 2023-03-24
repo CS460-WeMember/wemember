@@ -65,8 +65,6 @@ function ReminderPortal() {
         (today.getHours() == list[i].hour &&
           today.getMinutes() > list[i].minute)
       ) {
-        //if current time is more than the task time, set state to passed
-      ) {
         list[i].state = "passed";
 
       //else, set the state to upcoming
