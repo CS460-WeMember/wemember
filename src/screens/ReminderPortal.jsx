@@ -45,9 +45,9 @@ function ReminderPortal() {
   //this function returns a boolean. If the task is finished, return true.
   function getStateFromPb(item) {
     const now = new Date();
-    now.setUTCHours(now.getUTCHours() + 8)
+    now.setUTCHours(now.getUTCHours() + 8);
 
-    if (item["@collectionName"] == 'regular') {
+    if (item["@collectionName"] == "regular") {
       const finished = item.last_finished;
       //if finished is empty or finished occurred earlier than today's date
       if (finished == '' || finished.split(' ')[0] < now.toISOString().split('T')[0]) {
@@ -55,7 +55,7 @@ function ReminderPortal() {
       }
     } else {
       const finished = item.finished;
-      if (finished == '') {
+      if (finished == "") {
         return false;
       }
     }
@@ -85,7 +85,8 @@ function ReminderPortal() {
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
           today.getMinutes() >= list[i].minute)
-      ) {//if current time is more than the task time, set state to passed
+      ) {
+        //if current time is more than the task time, set state to passed
         if (getStateFromPb(list[i])) {
           list[i].state = "done";
         } else {
@@ -99,41 +100,38 @@ function ReminderPortal() {
       IF WE ARE AT THE FIRST ELEMENT IN THE LIST
       -----------------------------------------*/
       //if first element is the only element in the list
-      if (i == 0 && list.length == 1 ) { 
+      if (i == 0 && list.length == 1) {
         //if the state is passed, change its state to current
         if (list[i].state == "passed") {
           list[i].state = "current";
           setIndex(i);
         }
 
-      //if first element is NOT the only element in the list and its state is passed
-      //and the next element is upcoming, set its state to current
+        //if first element is NOT the only element in the list and its state is passed
+        //and the next element is upcoming, set its state to current
       } else if (i == 0 && list.length > 1) {
         if (list[i + 1].state == "upcoming") {
           list[i].state = "current";
           setIndex(i);
         }
 
-      /*---------------------------------------------
+        /*---------------------------------------------
       IF WE ARE NOT AT THE FIRST ELEMENT IN THE LIST
       ----------------------------------------------*/
-      } else if (  
+      } else if (
         //if previous reminder is passed AND the reminder's
         //state is upcoming, set the previous reminder to current, and update the index
-        (list[i - 1].state == "passed"  &&
-        list[i].state == "upcoming")
+        list[i - 1].state == "passed" &&
+        list[i].state == "upcoming"
       ) {
         list[i - 1].state = "current";
-        setIndex(i-1);
-        
-        //else if the reminder is the last reminder, set the state to current. 
-      } else if (
-        i == list.length - 1 && list[i-1].state == "passed"
-      ) {
+        setIndex(i - 1);
+
+        //else if the reminder is the last reminder, set the state to current.
+      } else if (i == list.length - 1 && list[i - 1].state == "passed") {
         list[i].state = "current";
         setIndex(i);
       }
-      console.log(list[i].state);
     }
   }
 
@@ -171,7 +169,7 @@ function ReminderPortal() {
 
     regularList.forEach((record) => {
       if (record.day == today.getDay() - 1 || record.day == -1) {
-        record.date = today.toISOString().split('T')[0];
+        record.date = today.toISOString().split("T")[0];
         list.push(record);
       }
     });
@@ -204,14 +202,21 @@ function ReminderPortal() {
     setIndex(itemChange);
   }
 
-  
-
-  function handleTaskDone(event) {
+  const handleTaskDone = async (event) => {
     const now = new Date();
     now.setUTCHours(now.getUTCHours() + 8);
-    console.log(now.toUTCString());
+
+    if (list[index]["@collectionName"] == "regular") {
+      const record = await pb.collection("regular").update(list[index].id, {
+        last_finished: now.toUTCString(),
+      });
+    } else {
+      const record = await pb.collection("adhoc").update(list[index].id, {
+        finished: now.toUTCString(),
+      });
+    }
     console.log("done button clicked!");
-  }
+  };
 
   function getImageUrl(item) {
     if (!item.picture) {
