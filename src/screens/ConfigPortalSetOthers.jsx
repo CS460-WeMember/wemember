@@ -28,6 +28,7 @@ function ConfigPortalSetTime() {
           //append device to formdata
           var formData = new FormData();
           formData.append("device", selectedDevice);
+          formData.append("completeField", 2);
 
           //url for upload and getting recordId
           const pb = new PocketBase(url);
@@ -42,7 +43,28 @@ function ConfigPortalSetTime() {
           }
   
           const response = await pb.collection(databaseCollection).update(recordId, formData);
-          console.log("pocketbase device upload response: ");
+          console.log("pocketbase device upload response in set others: ");
+          console.log(response);
+        }
+
+        if (selectedDevice === "nil") {
+          var formData = new FormData();
+          formData.append("completeField", 2);
+
+          //url for upload and getting recordId
+          const pb = new PocketBase(url);
+          const recordId = localStorage.getItem("recordId");
+  
+          //check if the repeat is daily or weekly and upload to the correct db
+          var databaseCollection = "";
+          if (localStorage.getItem("repeat") == "nil") { //for adhoc
+              databaseCollection = "adhoc";
+          } else { //for regular
+              databaseCollection = "regular";
+          }
+  
+          const response = await pb.collection(databaseCollection).update(recordId, formData);
+          console.log("pocketbase device upload response in set others: ");
           console.log(response);
         }
 

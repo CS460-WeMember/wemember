@@ -21,8 +21,6 @@ function ReminderPortal() {
       sort: "+when",
     });
 
-    //sort regularList based on time
-
     //change "when" field into date, hour and minute
     adhocList.forEach((record) => {
       const [date, time] = record.when.split(" ");
@@ -97,6 +95,9 @@ function ReminderPortal() {
 
     // Subscribe to changes using the debouncedFetchList function.
     pb.collection("regular").subscribe("*", function (e) {
+      if (e.action == "create" && e.record.state) {
+
+      }
       const reminder = e.record;
       const today = new Date();
       const tempList = list;
@@ -126,7 +127,7 @@ function ReminderPortal() {
     });
 
     pb.collection("adhoc").subscribe("*", function (e) {
-      debouncedFetchList();
+      console.log(e);
     });
 
     // Fetch the list initially.

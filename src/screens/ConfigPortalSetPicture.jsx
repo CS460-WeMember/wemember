@@ -22,6 +22,7 @@ function ConfigPortalSetPicture() {
         formData.append('picture', file);
         formData.append('title', localStorage.getItem("title"));
         formData.append('endTime', localStorage.getItem('date') + " " + localStorage.getItem("endTime") + ":00");
+        formData.append('completeField', 1);
 
         /*-------------------------------
         UPLOAD TO DATABASE
