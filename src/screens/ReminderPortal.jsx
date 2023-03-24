@@ -60,14 +60,17 @@ function ReminderPortal() {
   // };
 
   //this function returns a boolean. If the task is finished, return true.
-  function getStateFromPb(item) {
+  function isReminderDone(item) {
     const now = new Date();
     now.setUTCHours(now.getUTCHours() + 8);
 
     if (item["@collectionName"] == "regular") {
       const finished = item.last_finished;
       //if finished is empty or finished occurred earlier than today's date
-      if (finished == '' || finished.split(' ')[0] < now.toISOString().split('T')[0]) {
+      if (
+        finished == "" ||
+        finished.split(" ")[0] < now.toISOString().split("T")[0]
+      ) {
         return false;
       }
     } else {
@@ -95,13 +98,13 @@ function ReminderPortal() {
         //if current time is more than the task time, set state to passed
         if (isReminderDone(list[i])) {
           list[i].state = "done";
-          setDone(true);
-          setIndex(i+1);
         } else {
           list[i].state = "passed";
+          setDone(false);
         }
       } else {
         list[i].state = "upcoming";
+        setDone(false);
       }
 
       /*-----------------------------------------
@@ -113,36 +116,52 @@ function ReminderPortal() {
         if (list[i].state == "passed") {
           list[i].state = "current";
           setDone(false);
-          setIndex(i);
+        } else {
+          list[i].state = "done";
+          setDone(true);
         }
-
+        setIndex(i);
         //if first element is NOT the only element in the list and its state is passed
         //and the next element is upcoming, set its state to current
       } else if (i == 0 && list.length > 1) {
         if (list[i + 1].state == "upcoming") {
+          if (list[i].state == "done") {
+            setDone(true);
+          } else {
+            setDone(false);
+          }
           list[i].state = "current";
-          setDone(false);
           setIndex(i);
         }
 
-      /*---------------------------------------------
+        /*---------------------------------------------
       IF WE ARE NOT AT THE FIRST ELEMENT IN THE LIST
       ----------------------------------------------*/
       } else if (
         //if previous reminder is passed AND the reminder's
         //state is upcoming, set the previous reminder to current, and update the index
-        list[i - 1].state == "passed" &&
+        (list[i - 1].state == "passed" || list[i - 1].state == "done") &&
         list[i].state == "upcoming"
       ) {
-        list[i - 1].state = "current";
-        setDone(false);
+        if (list[i - 1].state == "passed") {
+          list[i - 1].state = "current";
+          setDone(false);
+        } else {
+          list[i - 1].state = "done";
+          setDone(true);
+        }
         setIndex(i - 1);
 
         //else if the reminder is the last reminder, set the state to current.
-      } else if (i == list.length - 1 && (list[i - 1].state == "passed" || list[i - 1].state == "done")) {
-        list[i].state = "current";
-        setDone(false);
-        setIndex(i);
+      } else if (i == list.length - 1) {
+        if (list[i].state == "passed") {
+          list[i].state = "current";
+          setDone(false);
+          setIndex(i);
+        } else if (list[i].state == "done") {
+          setDone(true);
+        }
+        
       }
     }
   }
@@ -194,51 +213,6 @@ function ReminderPortal() {
       }
     });
     assignState(list);
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].state == "upcoming") {
-        const timeoutFunction = (i, time) => {
-          setIndex(i);
-          if (list.length > 1 && list[i - 1].state == "current") {
-            list[i - 1].state = "passed";
-          }
-          list[i].state = "current";
-          console.log("timeout function" + time);
-          console.log(i);
-        };
-        var time = 0;
-
-        if (list[i]["@collectionName"] == "adhoc") {
-          time = new Date(list[i].when) - new Date().getTime();
-          console.log(time);
-          window.setTimeout(timeoutFunction, time, i, time);
-        }
-
-        if (list[i]["@collectionName"] == "regular") {
-          // const string = "" + new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + "T" + list[i].hour + ":" + list[i].minute + ":00Z";
-          // console.log(string);
-          // console.log(new Date(string).toDateString + new Date(string).toTimeString());
-          if (list[i].hour == new Date().getHours()) {
-            time = (list[i].minute - new Date().getMinutes()) * 60000;
-            console.log("1");
-          } else if (list[i].minute < new Date().getMinutes()) {
-            time =
-              ((list[i].hour - new Date().getHours() + 1) * 60 +
-                list[i].minute +
-                (60 - new Date().getMinutes())) *
-              60000;
-            console.log("2");
-          } else {
-            time =
-              ((list[i].hour - new Date().getHours() + 1) * 60 +
-                (list[i].minute - new Date().getMinutes)) *
-              60000;
-            console.log("3");
-          }
-          console.log(time);
-          window.setTimeout(timeoutFunction, time, i, time);
-        }
-      }
-    }
     setList(list);
     setLoading(false);
   };
@@ -272,6 +246,7 @@ function ReminderPortal() {
         finished: now.toUTCString(),
       });
     }
+    setDone(true);
     console.log("done button clicked!");
 
     //
@@ -306,17 +281,15 @@ function ReminderPortal() {
     }
   };
 
-  const doneCard = () => {
-    return(
+  const doneCard = (index) => {
+    return (
       <div className="reminder-main-container">
         <div className="reminder-text-container">
-          <h1 className="reminder-text">
-            Thank you for completing this task!
-          </h1>
+          <h1 className="reminder-text">Thank you for completing { list[index].title }!</h1>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="whole-screen">
@@ -329,27 +302,19 @@ function ReminderPortal() {
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
           <div className="white-display-screen">
-            {done && 
-              <div>
-                {doneCard}
-              </div>
-            
-              }
-            {list.length > 0 && !done ? (
+            {done ? (
+              <div>{doneCard(index)}</div>
+            ) : (
               <div className="reminder-main-container">
                 {image(list[index])}
                 <div className="reminder-text-container">
-                  <h1 className="reminder-text">
-                    {list[index].title}
-                  </h1>
+                  <h1 className="reminder-text">{list[index].title}</h1>
                 </div>
                 <button className="done-btn" onClick={handleTaskDone}>
                   <BiCheck className="done-btn-check-icon"></BiCheck>
                   <text>I am done!</text>
                 </button>
               </div>
-            ) : (
-              <p>No reminders found.</p>
             )}
           </div>
         </>
