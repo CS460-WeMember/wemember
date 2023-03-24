@@ -50,19 +50,26 @@ function ReminderPortal() {
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
           today.getMinutes() > list[i].minute)
-      ) {
+      ) {//if current time is more than the task time, set state to passed
         list[i].state = "passed";
       } else {
         list[i].state = "upcoming";
       }
-      if (
-        (i == 0 || list[i - 1].state == "passed" || i == list.length - 1) &&
+      if ( 
+        //if first or last reminder, or if previous reminder is passed AND the reminder's
+        //state is upcoming, set the previous reminder to current, and update the index
+        (i == 0 || list[i - 1].state == "passed" ) &&
         list[i].state == "upcoming"
       ) {
         list[i - 1].state = "current";
         setIndex(i-1);
+
+      } else if (
+        i == list.length - 1
+      ) {
+        list[i].state = "current";
+        setIndex(i);
       }
-      console.log(list[i].finished == "done");
     }
   }
 
@@ -146,47 +153,6 @@ function ReminderPortal() {
   }, []);
 
   useEffect(() => {
-    // const debouncedFetchList = debounce(fetchList, 500);
-
-    // Subscribe to changes using the debouncedFetchList function.
-    // pb.collection("regular").subscribe("*", function (e) {
-    //   const reminder = e.record;
-    //   const today = new Date();
-    //   const tempList = list;
-    //   if (reminder.day == today.getDay() - 1 || reminder.day == -1) {
-    //     if (
-    //       today.getHours() > reminder.hour ||
-    //       (today.getHours() == reminder.hour &&
-    //         today.getMinutes() > reminder.hour)
-    //     ) {
-    //       reminder.state = "passed";
-    //     } else {
-    //       reminder.state = "upcoming";
-    //     }
-    //     tempList.push(reminder);
-    //     tempList.sort((a, b) => {
-    //       if (a.hour === b.hour) {
-    //         return a.minute - b.minute;
-    //       } else {
-    //         return a.hour - b.hour;
-    //       }
-    //     });
-    //     console.log(e.record);
-    //     console.log("subscribe reminder");
-    //     console.log("KLEJLKJRLKNFKNKSNASLKMFKDMF");
-    //     console.log(list);
-    //     console.log("KLEJLKJRLKNFKNKSNASLKMFKDMF");
-    //     //setList(tempList);
-    // }
-
-    // });
-
-    // pb.collection("adhoc").subscribe("*", function (e) {
-    //   console.log(e.action);
-    //   console.log("why are u here");
-    // });
-
-    // Fetch the list initially.
     fetchList();
 
     pb.collection("adhoc").subscribe("*", function (e) {
