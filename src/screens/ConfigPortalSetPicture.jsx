@@ -58,7 +58,10 @@ function ConfigPortalSetPicture() {
 
             } else if (localStorage.getItem("repeat") == "weekly") {
                 const startDate = new Date(localStorage.getItem("date"));
-                const day = startDate.getDay();
+                var day = startDate.getDay() - 1;
+                if (day == -1) {
+                    day = 6;
+                }
                 formData.append('day', day);
                 formData.append('hour', hour);
                 formData.append('minute', minute);

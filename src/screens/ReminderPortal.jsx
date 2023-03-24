@@ -56,25 +56,59 @@ function ReminderPortal() {
         // setAudio(new Audio(getAudioUrl(list[i])));
         // playAudio();
       }
+      /*-----------------------------------------
+      SET INITIAL STATES
+      -----------------------------------------*/
+      //if current time is past the time of the reminder, set the state to passed
       if (
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
           today.getMinutes() > list[i].minute)
       ) {
         //if current time is more than the task time, set state to passed
+      ) {
         list[i].state = "passed";
+
+      //else, set the state to upcoming
       } else {
         list[i].state = "upcoming";
       }
-      if (
-        //if first or last reminder, or if previous reminder is passed AND the reminder's
+
+      /*-----------------------------------------
+      IF WE ARE AT THE FIRST ELEMENT IN THE LIST
+      -----------------------------------------*/
+      //if first element is the only element in the list
+      if (i == 0 && list.length == 1 ) { 
+        //if the state is passed, change its state to current
+        if (list[i].state == "passed") {
+          list[i].state = "current";
+          setIndex(i);
+        }
+
+      //if first element is NOT the only element in the list and its state is passed
+      //and the next element is upcoming, set its state to current
+      } else if (i == 0 && list.length > 1) {
+        if (list[i + 1].state == "upcoming") {
+          list[i].state = "current";
+          setIndex(i);
+        }
+
+      /*---------------------------------------------
+      IF WE ARE NOT AT THE FIRST ELEMENT IN THE LIST
+      ----------------------------------------------*/
+      } else if (  
+        //if previous reminder is passed AND the reminder's
         //state is upcoming, set the previous reminder to current, and update the index
-        (i == 0 || list[i - 1].state == "passed") &&
-        list[i].state == "upcoming"
+        (list[i - 1].state == "passed"  &&
+        list[i].state == "upcoming")
       ) {
         list[i - 1].state = "current";
-        setIndex(i - 1);
-      } else if (i == list.length - 1) {
+        setIndex(i-1);
+        
+        //else if the reminder is the last reminder, set the state to current. 
+      } else if (
+        i == list.length - 1 && list[i-1].state == "passed"
+      ) {
         list[i].state = "current";
         setIndex(i);
       }
