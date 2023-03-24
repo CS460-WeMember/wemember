@@ -35,6 +35,25 @@ function ReminderPortal() {
 
   };
 
+  function getStateFromPb(item) {
+    const now = new Date();
+    now.setUTCHours(now.getUTCHours() + 8)
+
+    if (item["@collectionName"] == 'regular') {
+      const finished = item.last_finished;
+      if (finished == '' || finished.split(' ')[0] < now.toISOString().split('T')[0]) {
+        return false;
+      }
+    } else {
+      const finished = item.finished;
+      if (finished == '') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   function assignState(list) {
     const today = new Date();
     for (var i = 0; i < list.length; i++) {
@@ -46,12 +65,19 @@ function ReminderPortal() {
         // setAudio(new Audio(getAudioUrl(list[i])));
         // playAudio();
       }
+      
+      console.log(list[i].title, getStateFromPb(list[i]));
+
       if (
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
           today.getMinutes() > list[i].minute)
       ) {//if current time is more than the task time, set state to passed
-        list[i].state = "passed";
+        if (getStateFromPb(list[i])) {
+          list[i].state = "done";
+        } else {
+          list[i].state = "passed";
+        }
       } else {
         list[i].state = "upcoming";
       }
@@ -79,6 +105,7 @@ function ReminderPortal() {
         list[i].state = "current";
         setIndex(i);
       }
+      console.log(list[i].state);
     }
   }
 
@@ -101,8 +128,6 @@ function ReminderPortal() {
       record.minute = Number(minute);
       record.reminderDate = new Date(record.when);
     });
-    console.log("adhocList");
-    console.log(adhocList);
 
     var list = [];
     const today = new Date();
@@ -116,9 +141,9 @@ function ReminderPortal() {
       }
     });
 
-    console.log(list);
     regularList.forEach((record) => {
       if (record.day == today.getDay() - 1 || record.day == -1) {
+        record.date = today.toISOString().split('T')[0];
         list.push(record);
       }
     });
@@ -134,9 +159,6 @@ function ReminderPortal() {
     assignState(list);
     setList(list);
     setLoading(false);
-    console.log("====================================");
-    console.log(list);
-    console.log("====================================");
   };
 
 
