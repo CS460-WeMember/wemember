@@ -92,18 +92,10 @@ const ReminderList = ({ onItemChange, list }) => {
           <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
         </li>
       );
-    } else if (item.state == "current-before") {
-      return (
-        <li className="list-items" key={index}>
-            {itemHour}.{itemMinute}{afterNoon} - {item.title}
-          <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
-        </li>
-      );
     } else if (item.state == "current") {
       return (
         <li className="list-items-current" key={index}>
             {itemHour}.{itemMinute}{afterNoon} - {item.title}
-          <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
         </li>
       );
     }

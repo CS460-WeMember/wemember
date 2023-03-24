@@ -134,6 +134,14 @@ function ReminderPortal() {
 
     // Fetch the list initially.
     fetchList();
+
+    pb.collection("adhoc").subscribe("*", function (e) {
+      fetchList();
+    });
+
+    pb.collection("regular").subscribe("*", function (e) {
+      fetchList();
+    });
   }, []);
 
 

@@ -67,7 +67,8 @@ function ConfigPortalSetTime() {
           console.log("pocketbase device upload response in set others: ");
           console.log(response);
         }
-
+        localStorage.setItem("repeat", null);
+        localStorage.setItem("recordId", null);
         //go back to the portal
         navigate("/");
     }
