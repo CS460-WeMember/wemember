@@ -146,7 +146,7 @@ function ReminderPortal() {
   }, []);
 
   useEffect(() => {
-    const debouncedFetchList = debounce(fetchList, 500);
+    // const debouncedFetchList = debounce(fetchList, 500);
 
     // Subscribe to changes using the debouncedFetchList function.
     // pb.collection("regular").subscribe("*", function (e) {
@@ -188,6 +188,14 @@ function ReminderPortal() {
 
     // Fetch the list initially.
     fetchList();
+
+    pb.collection("adhoc").subscribe("*", function (e) {
+      fetchList();
+    });
+
+    pb.collection("regular").subscribe("*", function (e) {
+      fetchList();
+    });
   }, []);
 
 
