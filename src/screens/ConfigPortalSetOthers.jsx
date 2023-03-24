@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import url from "../global/PocketbaseURL";
 import PocketBase from 'pocketbase';
+import Modal from 'react-modal';
 
 function ConfigPortalSetTime() {
     const navigate = useNavigate();
@@ -21,60 +22,85 @@ function ConfigPortalSetTime() {
     async function handleFinishedButtonClick(event) {
         console.log("finished button clicked!");
 
-        if (selectedDevice !== "nil") {
-          /*-------------------------------
-          UPLOAD TO DATABASE
-          ---------------------------------*/
-          //append device to formdata
-          var formData = new FormData();
-          formData.append("device", selectedDevice);
-          formData.append("completeField", 2);
+        if (selectedDevice == "") {
+          setModalIsOpen(true);
 
-          //url for upload and getting recordId
-          const pb = new PocketBase(url);
-          const recordId = localStorage.getItem("recordId");
+        } else {
+          if (selectedDevice !== "nil") {
+            /*-------------------------------
+            UPLOAD TO DATABASE
+            ---------------------------------*/
+            //append device to formdata
+            var formData = new FormData();
+            formData.append("device", selectedDevice);
+            formData.append("completeField", 2);
   
-          //check if the repeat is daily or weekly and upload to the correct db
-          var databaseCollection = "";
-          if (localStorage.getItem("repeat") == "nil") { //for adhoc
-              databaseCollection = "adhoc";
-          } else { //for regular
-              databaseCollection = "regular";
+            //url for upload and getting recordId
+            const pb = new PocketBase(url);
+            const recordId = localStorage.getItem("recordId");
+    
+            //check if the repeat is daily or weekly and upload to the correct db
+            var databaseCollection = "";
+            if (localStorage.getItem("repeat") == "nil") { //for adhoc
+                databaseCollection = "adhoc";
+            } else { //for regular
+                databaseCollection = "regular";
+            }
+    
+            const response = await pb.collection(databaseCollection).update(recordId, formData);
+            console.log("pocketbase device upload response in set others: ");
+            console.log(response);
           }
   
-          const response = await pb.collection(databaseCollection).update(recordId, formData);
-          console.log("pocketbase device upload response in set others: ");
-          console.log(response);
-        }
-
-        if (selectedDevice === "nil") {
-          var formData = new FormData();
-          formData.append("completeField", 2);
-
-          //url for upload and getting recordId
-          const pb = new PocketBase(url);
-          const recordId = localStorage.getItem("recordId");
+          if (selectedDevice === "nil") {
+            var formData = new FormData();
+            formData.append("completeField", 2);
   
-          //check if the repeat is daily or weekly and upload to the correct db
-          var databaseCollection = "";
-          if (localStorage.getItem("repeat") == "nil") { //for adhoc
-              databaseCollection = "adhoc";
-          } else { //for regular
-              databaseCollection = "regular";
+            //url for upload and getting recordId
+            const pb = new PocketBase(url);
+            const recordId = localStorage.getItem("recordId");
+    
+            //check if the repeat is daily or weekly and upload to the correct db
+            var databaseCollection = "";
+            if (localStorage.getItem("repeat") == "nil") { //for adhoc
+                databaseCollection = "adhoc";
+            } else { //for regular
+                databaseCollection = "regular";
+            }
+    
+            const response = await pb.collection(databaseCollection).update(recordId, formData);
+            console.log("pocketbase device upload response in set others: ");
+            console.log(response);
           }
-  
-          const response = await pb.collection(databaseCollection).update(recordId, formData);
-          console.log("pocketbase device upload response in set others: ");
-          console.log(response);
+          localStorage.setItem("repeat", null);
+          localStorage.setItem("recordId", null);
+          //go back to the portal
+          navigate("/");
+
+
         }
-        localStorage.setItem("repeat", null);
-        localStorage.setItem("recordId", null);
-        //go back to the portal
-        navigate("/");
+
+    }
+
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const openModal = () => {
+      setModalIsOpen(true);
+    }
+    const closeModal = () => {
+      setModalIsOpen(false);
     }
 
     return(
       <div className="grey-background">
+        <Modal
+            className="input-validation-modal"
+            overlayClassName="input-validation-modal-overlay"
+            isOpen={modalIsOpen}
+            onRequestClose={closeModal}
+        >
+            <h2>Please select one option!</h2>
+            <button onClick={closeModal}>Got it!</button>
+        </Modal>
           <div className="blue-container">
 
               <div className="blue-grid">

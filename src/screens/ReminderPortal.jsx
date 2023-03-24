@@ -42,12 +42,14 @@ function ReminderPortal() {
     audio.play();
   };
 
+  //this function returns a boolean. If the task is finished, return true.
   function getStateFromPb(item) {
     const now = new Date();
     now.setUTCHours(now.getUTCHours() + 8)
 
     if (item["@collectionName"] == 'regular') {
       const finished = item.last_finished;
+      //if finished is empty or finished occurred earlier than today's date
       if (finished == '' || finished.split(' ')[0] < now.toISOString().split('T')[0]) {
         return false;
       }
