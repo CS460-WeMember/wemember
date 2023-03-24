@@ -13,7 +13,15 @@ function ReminderPortal() {
     if (!item.audio) {
       return null;
     } else {
-      return import.meta.env.VITE_API_URL + "/api/files/"+ item["@collectionName"] + "/" + item.id + "/" + item.audio;
+      return (
+        import.meta.env.VITE_API_URL +
+        "/api/files/" +
+        item["@collectionName"] +
+        "/" +
+        item.id +
+        "/" +
+        item.audio
+      );
     }
   }
   const [audio, setAudio] = useState(new Audio());
@@ -21,18 +29,17 @@ function ReminderPortal() {
   const playAudio = () => {
     if (audio) {
       if (list[index].options.sound === "off") {
-        audio.volume = soundLevel.off
+        audio.volume = soundLevel.off;
       } else if (list[index].options.sound === "low") {
-        audio.volume = soundLevel.low
+        audio.volume = soundLevel.low;
       } else if (list[index].options.sound === "mid") {
-        audio.volume = soundLevel.mid
+        audio.volume = soundLevel.mid;
       } else {
-        audio.volume = soundLevel.high
+        audio.volume = soundLevel.high;
       }
       setAudio(audio);
     }
     audio.play();
-
   };
 
   function assignState(list) {
@@ -41,7 +48,10 @@ function ReminderPortal() {
       // if ((today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) || list[i].state == "current-after") {
       //   list[i].state = "current-after";
       // }
-      if (today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) {
+      if (
+        today.getHours() == list[i].hour &&
+        today.getMinutes() == list[i].minute
+      ) {
         // console.log("play audio");
         // setAudio(new Audio(getAudioUrl(list[i])));
         // playAudio();
@@ -50,23 +60,21 @@ function ReminderPortal() {
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
           today.getMinutes() > list[i].minute)
-      ) {//if current time is more than the task time, set state to passed
+      ) {
+        //if current time is more than the task time, set state to passed
         list[i].state = "passed";
       } else {
         list[i].state = "upcoming";
       }
-      if ( 
+      if (
         //if first or last reminder, or if previous reminder is passed AND the reminder's
         //state is upcoming, set the previous reminder to current, and update the index
-        (i == 0 || list[i - 1].state == "passed" ) &&
+        (i == 0 || list[i - 1].state == "passed") &&
         list[i].state == "upcoming"
       ) {
         list[i - 1].state = "current";
-        setIndex(i-1);
-
-      } else if (
-        i == list.length - 1
-      ) {
+        setIndex(i - 1);
+      } else if (i == list.length - 1) {
         list[i].state = "current";
         setIndex(i);
       }
@@ -121,7 +129,6 @@ function ReminderPortal() {
         return a.hour - b.hour;
       }
     });
-
     assignState(list);
     setList(list);
     setLoading(false);
@@ -129,7 +136,6 @@ function ReminderPortal() {
     console.log(list);
     console.log("====================================");
   };
-
 
   useEffect(() => {
     fetchList();
@@ -142,7 +148,6 @@ function ReminderPortal() {
       fetchList();
     });
   }, []);
-
 
   function handleNewItem(itemChange) {
     setIndex(itemChange);
