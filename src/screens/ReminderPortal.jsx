@@ -9,38 +9,54 @@ function ReminderPortal() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
-  function getAudioUrl(item) {
-    if (!item.audio) {
-      return null;
-    } else {
-      return (
-        import.meta.env.VITE_API_URL +
-        "/api/files/" +
-        item["@collectionName"] +
-        "/" +
-        item.id +
-        "/" +
-        item.audio
-      );
-    }
-  }
-  const [audio, setAudio] = useState(new Audio());
 
-  const playAudio = () => {
-    if (audio) {
-      if (list[index].options.sound === "off") {
-        audio.volume = soundLevel.off;
-      } else if (list[index].options.sound === "low") {
-        audio.volume = soundLevel.low;
-      } else if (list[index].options.sound === "mid") {
-        audio.volume = soundLevel.mid;
-      } else {
-        audio.volume = soundLevel.high;
-      }
-      setAudio(audio);
-    }
-    audio.play();
-  };
+  // function getAudioUrl(item) {
+  //   if (!item.audio) {
+  //     return null;
+  //   }
+  //   setAudio(
+  //     import.meta.env.VITE_API_URL +
+  //       "/api/files/" +
+  //       item["@collectionName"] +
+  //       "/" +
+  //       item.id +
+  //       "/" +
+  //       item.audio
+  //   );
+
+  //   if (audio) {
+  //     if (list[index].options.sound === "off") {
+  //       audio.volume = soundLevel.off;
+  //     } else if (list[index].options.sound === "low") {
+  //       audio.volume = soundLevel.low;
+  //     } else if (list[index].options.sound === "mid") {
+  //       audio.volume = soundLevel.mid;
+  //     } else {
+  //       audio.volume = soundLevel.high;
+  //     }
+  //     setAudio(audio);
+  //   }
+  //   // return audio;
+
+  //   // audio.play();
+  // }
+  // const [audio, setAudio] = useState(new Audio(getAudioUrl(list[index])));
+
+  // const playAudio = () => {
+  //   if (audio) {
+  //     if (list[index].options.sound === "off") {
+  //       audio.volume = soundLevel.off;
+  //     } else if (list[index].options.sound === "low") {
+  //       audio.volume = soundLevel.low;
+  //     } else if (list[index].options.sound === "mid") {
+  //       audio.volume = soundLevel.mid;
+  //     } else {
+  //       audio.volume = soundLevel.high;
+  //     }
+  //     setAudio(audio);
+  //   }
+  //   audio.play();
+  // };
 
   //this function returns a boolean. If the task is finished, return true.
   function getStateFromPb(item) {
@@ -66,17 +82,6 @@ function ReminderPortal() {
   function assignState(list) {
     const today = new Date();
     for (var i = 0; i < list.length; i++) {
-      // if ((today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) || list[i].state == "current-after") {
-      //   list[i].state = "current-after";
-      // }
-      if (
-        today.getHours() == list[i].hour &&
-        today.getMinutes() == list[i].minute
-      ) {
-        // console.log("play audio");
-        // setAudio(new Audio(getAudioUrl(list[i])));
-        // playAudio();
-      }
       /*-----------------------------------------
       SET INITIAL STATES
       -----------------------------------------*/
@@ -182,6 +187,51 @@ function ReminderPortal() {
       }
     });
     assignState(list);
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].state == "upcoming") {
+        const timeoutFunction = (i, time) => {
+          setIndex(i);
+          if (list.length > 1 && list[i - 1].state == "current") {
+            list[i - 1].state = "passed";
+          }
+          list[i].state = "current";
+          console.log("timeout function" + time);
+          console.log(i);
+        };
+        var time = 0;
+
+        if (list[i]["@collectionName"] == "adhoc") {
+          time = new Date(list[i].when) - new Date().getTime();
+          console.log(time);
+          window.setTimeout(timeoutFunction, time, i, time);
+        }
+
+        if (list[i]["@collectionName"] == "regular") {
+          // const string = "" + new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + "T" + list[i].hour + ":" + list[i].minute + ":00Z";
+          // console.log(string);
+          // console.log(new Date(string).toDateString + new Date(string).toTimeString());
+          if (list[i].hour == new Date().getHours()) {
+            time = (list[i].minute - new Date().getMinutes()) * 60000;
+            console.log("1");
+          } else if (list[i].minute < new Date().getMinutes()) {
+            time =
+              ((list[i].hour - new Date().getHours() + 1) * 60 +
+                list[i].minute +
+                (60 - new Date().getMinutes())) *
+              60000;
+            console.log("2");
+          } else {
+            time =
+              ((list[i].hour - new Date().getHours() + 1) * 60 +
+                (list[i].minute - new Date().getMinutes)) *
+              60000;
+            console.log("3");
+          }
+          console.log(time);
+          window.setTimeout(timeoutFunction, time, i, time);
+        }
+      }
+    }
     setList(list);
     setLoading(false);
   };
@@ -249,6 +299,7 @@ function ReminderPortal() {
 
   return (
     <div className="whole-screen">
+      <audio id="myAudio" autoPlay></audio>
       {loading ? (
         <p>Loading...</p>
       ) : (
