@@ -6,6 +6,7 @@ import "../styles/ReminderPortal.css";
 import { BiCheck } from "react-icons/bi";
 
 function ReminderPortal() {
+  const [done, setDone] = useState(false);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
@@ -92,8 +93,10 @@ function ReminderPortal() {
           today.getMinutes() >= list[i].minute)
       ) {
         //if current time is more than the task time, set state to passed
-        if (getStateFromPb(list[i])) {
+        if (isReminderDone(list[i])) {
           list[i].state = "done";
+          setDone(true);
+          setIndex(i+1);
         } else {
           list[i].state = "passed";
         }
@@ -109,6 +112,7 @@ function ReminderPortal() {
         //if the state is passed, change its state to current
         if (list[i].state == "passed") {
           list[i].state = "current";
+          setDone(false);
           setIndex(i);
         }
 
@@ -117,10 +121,11 @@ function ReminderPortal() {
       } else if (i == 0 && list.length > 1) {
         if (list[i + 1].state == "upcoming") {
           list[i].state = "current";
+          setDone(false);
           setIndex(i);
         }
 
-        /*---------------------------------------------
+      /*---------------------------------------------
       IF WE ARE NOT AT THE FIRST ELEMENT IN THE LIST
       ----------------------------------------------*/
       } else if (
@@ -130,11 +135,13 @@ function ReminderPortal() {
         list[i].state == "upcoming"
       ) {
         list[i - 1].state = "current";
+        setDone(false);
         setIndex(i - 1);
 
         //else if the reminder is the last reminder, set the state to current.
-      } else if (i == list.length - 1 && list[i - 1].state == "passed") {
+      } else if (i == list.length - 1 && (list[i - 1].state == "passed" || list[i - 1].state == "done")) {
         list[i].state = "current";
+        setDone(false);
         setIndex(i);
       }
     }
@@ -253,9 +260,9 @@ function ReminderPortal() {
   }
 
   const handleTaskDone = async (event) => {
+    //update the finished timings to pocketbase
     const now = new Date();
     now.setUTCHours(now.getUTCHours() + 8);
-
     if (list[index]["@collectionName"] == "regular") {
       const record = await pb.collection("regular").update(list[index].id, {
         last_finished: now.toUTCString(),
@@ -266,6 +273,8 @@ function ReminderPortal() {
       });
     }
     console.log("done button clicked!");
+
+    //
   };
 
   function getImageUrl(item) {
@@ -297,6 +306,18 @@ function ReminderPortal() {
     }
   };
 
+  const doneCard = () => {
+    return(
+      <div className="reminder-main-container">
+        <div className="reminder-text-container">
+          <h1 className="reminder-text">
+            Thank you for completing this task!
+          </h1>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="whole-screen">
       <audio id="myAudio" autoPlay></audio>
@@ -308,14 +329,18 @@ function ReminderPortal() {
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
           <div className="white-display-screen">
-            {list.length > 0 ? (
+            {done && 
+              <div>
+                {doneCard}
+              </div>
+            
+              }
+            {list.length > 0 && !done ? (
               <div className="reminder-main-container">
                 {image(list[index])}
-                {/* border flex aspect-2/1 min-w-[300px] w-3/12 md:w-1/2 lg:w-7/12 border-light-blue rounded-lg shadow-lg mt-10 rounded-b-lg text-dark-blue justify-center items-center */}
                 <div className="reminder-text-container">
                   <h1 className="reminder-text">
                     {list[index].title}
-                    {/* <Batch itemHour={item.hour} itemMin ={item.minute}/> */}
                   </h1>
                 </div>
                 <button className="done-btn" onClick={handleTaskDone}>
