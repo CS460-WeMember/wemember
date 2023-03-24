@@ -2,14 +2,69 @@ import ReminderList from "../components/ReminderList.jsx";
 import ReminderCard from "../components/ReminderCard.jsx";
 import React, { useState, useEffect } from "react";
 import pb from "../api/pocketbase.jsx";
-import "../styles/ReminderPortal.css"
-import {BiCheck} from "react-icons/bi";
+import "../styles/ReminderPortal.css";
+import { BiCheck } from "react-icons/bi";
 
 function ReminderPortal() {
-
-
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [index, setIndex] = useState(0);
+  function getAudioUrl(item) {
+    if (!item.audio) {
+      return null;
+    } else {
+      return import.meta.env.VITE_API_URL + "/api/files/"+ item["@collectionName"] + "/" + item.id + "/" + item.audio;
+    }
+  }
+  const [audio, setAudio] = useState(new Audio());
+
+  const playAudio = () => {
+    if (audio) {
+      if (list[index].options.sound === "off") {
+        audio.volume = soundLevel.off
+      } else if (list[index].options.sound === "low") {
+        audio.volume = soundLevel.low
+      } else if (list[index].options.sound === "mid") {
+        audio.volume = soundLevel.mid
+      } else {
+        audio.volume = soundLevel.high
+      }
+      setAudio(audio);
+    }
+    audio.play();
+
+  };
+
+  function assignState(list) {
+    const today = new Date();
+    for (var i = 0; i < list.length; i++) {
+      // if ((today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) || list[i].state == "current-after") {
+      //   list[i].state = "current-after";
+      // }
+      if (today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) {
+        // console.log("play audio");
+        // setAudio(new Audio(getAudioUrl(list[i])));
+        // playAudio();
+      }
+      if (
+        today.getHours() > list[i].hour ||
+        (today.getHours() == list[i].hour &&
+          today.getMinutes() > list[i].minute)
+      ) {
+        list[i].state = "passed";
+      } else {
+        list[i].state = "upcoming";
+      }
+      if (
+        (i == 0 || list[i - 1].state == "passed" || i == list.length - 1) &&
+        list[i].state == "upcoming"
+      ) {
+        list[i - 1].state = "current";
+        setIndex(i-1);
+      }
+      console.log(list[i].finished == "done");
+    }
+  }
 
   const fetchList = async () => {
     setLoading(true);
@@ -37,16 +92,18 @@ function ReminderPortal() {
     const today = new Date();
 
     adhocList.forEach((record) => {
-      if (record.reminderDate.getDate() == today.getDate() &&
-        record.reminderDate.getMonth() == today.getMonth()) {
-          list.push(record);
+      if (
+        record.reminderDate.getDate() == today.getDate() &&
+        record.reminderDate.getMonth() == today.getMonth()
+      ) {
+        list.push(record);
       }
     });
 
     console.log(list);
     regularList.forEach((record) => {
       if (record.day == today.getDay() - 1 || record.day == -1) {
-          list.push(record);
+        list.push(record);
       }
     });
 
@@ -58,18 +115,7 @@ function ReminderPortal() {
       }
     });
 
-    list.forEach((reminder) => {
-      console.log("today hour" + today.getHours() + "reminder hour" + reminder.hour);
-      if (
-        today.getHours() > reminder.hour ||
-        (today.getHours() == reminder.hour &&
-          today.getMinutes() > reminder.hour)
-      ) {
-        reminder.state = "passed";
-      } else {
-        reminder.state = "upcoming";
-      }
-    });
+    assignState(list);
     setList(list);
     setLoading(false);
     console.log("====================================");
@@ -91,50 +137,59 @@ function ReminderPortal() {
   };
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setLoading(true);
+      debounce(fetchList(), 500);
+      setLoading(false);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     const debouncedFetchList = debounce(fetchList, 500);
 
     // Subscribe to changes using the debouncedFetchList function.
-    pb.collection("regular").subscribe("*", function (e) {
-      if (e.action == "create" && e.record.state) {
+    // pb.collection("regular").subscribe("*", function (e) {
+    //   const reminder = e.record;
+    //   const today = new Date();
+    //   const tempList = list;
+    //   if (reminder.day == today.getDay() - 1 || reminder.day == -1) {
+    //     if (
+    //       today.getHours() > reminder.hour ||
+    //       (today.getHours() == reminder.hour &&
+    //         today.getMinutes() > reminder.hour)
+    //     ) {
+    //       reminder.state = "passed";
+    //     } else {
+    //       reminder.state = "upcoming";
+    //     }
+    //     tempList.push(reminder);
+    //     tempList.sort((a, b) => {
+    //       if (a.hour === b.hour) {
+    //         return a.minute - b.minute;
+    //       } else {
+    //         return a.hour - b.hour;
+    //       }
+    //     });
+    //     console.log(e.record);
+    //     console.log("subscribe reminder");
+    //     console.log("KLEJLKJRLKNFKNKSNASLKMFKDMF");
+    //     console.log(list);
+    //     console.log("KLEJLKJRLKNFKNKSNASLKMFKDMF");
+    //     //setList(tempList);
+    // }
 
-      }
-      const reminder = e.record;
-      const today = new Date();
-      const tempList = list;
-      if (reminder.day == today.getDay() - 1 || reminder.day == -1) {
-        if (
-          today.getHours() > reminder.hour ||
-          (today.getHours() == reminder.hour &&
-            today.getMinutes() > reminder.hour)
-        ) {
-          reminder.state = "passed";
-        } else {
-          reminder.state = "upcoming";
-        }
-        tempList.push(reminder);
-        tempList.sort((a, b) => {
-          if (a.hour === b.hour) {
-            return a.minute - b.minute;
-          } else {
-            return a.hour - b.hour;
-          }
-        });
-        console.log("subscribe reminder")
-        console.log(list);
-        setList(tempList);
-    }
-  
-    });
+    // });
 
-    pb.collection("adhoc").subscribe("*", function (e) {
-      console.log(e);
-    });
+    // pb.collection("adhoc").subscribe("*", function (e) {
+    //   console.log(e.action);
+    //   console.log("why are u here");
+    // });
 
     // Fetch the list initially.
     fetchList();
   }, []);
 
-  const [index, setIndex] = useState(0);
 
   function handleNewItem(itemChange) {
     setIndex(itemChange);
@@ -148,10 +203,17 @@ function ReminderPortal() {
     if (!item.picture) {
       return null;
     } else {
-      return import.meta.env.VITE_API_URL + "/api/files/"+ item["@collectionName"] + "/" + item.id + "/" + item.picture;
+      return (
+        import.meta.env.VITE_API_URL +
+        "/api/files/" +
+        item["@collectionName"] +
+        "/" +
+        item.id +
+        "/" +
+        item.picture
+      );
     }
   }
-
 
   const image = (item) => {
     const itemPicture = getImageUrl(item);
@@ -160,15 +222,11 @@ function ReminderPortal() {
     } else {
       return (
         <div className="reminder-image-container">
-            <img
-                src={itemPicture}
-            />
+          <img src={itemPicture} />
         </div>
       );
     }
   };
-
-  
 
   return (
     <div className="whole-screen">
@@ -182,26 +240,23 @@ function ReminderPortal() {
           <div className="white-display-screen">
             {list.length > 0 ? (
               <div className="reminder-main-container">
-      {image(list[index])}
-      {/* border flex aspect-2/1 min-w-[300px] w-3/12 md:w-1/2 lg:w-7/12 border-light-blue rounded-lg shadow-lg mt-10 rounded-b-lg text-dark-blue justify-center items-center */}
-      <div className="reminder-text-container">
-        <h1 className="reminder-text">
-          {list[index].title} 
-          {/* <Batch itemHour={item.hour} itemMin ={item.minute}/> */}
-        </h1>
-      </div>
-      <button className="done-btn" onClick={handleTaskDone}>
-        <BiCheck className="done-btn-check-icon"></BiCheck>
-        <text>
-          I am done!
-        </text>
-      </button>
-    </div>
+                {image(list[index])}
+                {/* border flex aspect-2/1 min-w-[300px] w-3/12 md:w-1/2 lg:w-7/12 border-light-blue rounded-lg shadow-lg mt-10 rounded-b-lg text-dark-blue justify-center items-center */}
+                <div className="reminder-text-container">
+                  <h1 className="reminder-text">
+                    {list[index].title}
+                    {/* <Batch itemHour={item.hour} itemMin ={item.minute}/> */}
+                  </h1>
+                </div>
+                <button className="done-btn" onClick={handleTaskDone}>
+                  <BiCheck className="done-btn-check-icon"></BiCheck>
+                  <text>I am done!</text>
+                </button>
+              </div>
             ) : (
               <p>No reminders found.</p>
             )}
           </div>
-          
         </>
       )}
     </div>

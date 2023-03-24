@@ -68,6 +68,25 @@ padding-right: 2rem;
 border: 1.5px solid white
 }
 
+.list-items-current {
+    height: 4.75rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+    font-weight: 700;
+    font-size: 18px;
+    color: white;
+    letter-spacing: 0.2px;
+    background-color: #000000;
+    border-bottom-color: white;
+    border-radius: 0.375rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    border: 1.5px solid white
+}
+
 .list-items-done:hover {
 background-color: white;
 color: #93C5FD;

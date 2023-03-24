@@ -46,48 +46,62 @@ const ReminderList = ({ onItemChange, list }) => {
     const [status, setStatus] = useState();
     const [current, setCurrent] = useState(0);
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        const today = new Date();
-        if (
-          today.getHours() > item.hour ||
-          (today.getHours() === item.hour && today.getMinutes() >= item.minute)
-        ) {
-          // passed; task done
-          if (index == items.length - 1) {
-            setCurrent(0);
-            showItem(0);
-          }
-          setStatus(states.passed);
-        } else {
-          // upcoming; haven't done
-          if (
-            today.getHours() > list[current].hour ||
-            (today.getHours() === list[current].hour &&
-              today.getMinutes() >= list[current].minute)
-          ) {
-            setCurrent(current + 1);
-            showItem(current+1);
-          }
-          setStatus(states.upcoming);
-        }
-      });
-      return () => clearInterval(interval);
-    }, [{ itemHour }, { itemMinute }]);
+    // useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     const today = new Date();
+    //     if (
+    //       today.getHours() > item.hour ||
+    //       (today.getHours() === item.hour && today.getMinutes() >= item.minute)
+    //     ) {
+    //       // passed; task done
+    //       if (index == items.length - 1) {
+    //         setCurrent(0);
+    //         showItem(0);
+    //       }
+    //       setStatus(states.passed);
+    //     } else {
+    //       // upcoming; haven't done
+    //       if (
+    //         today.getHours() > list[current].hour ||
+    //         (today.getHours() === list[current].hour &&
+    //           today.getMinutes() >= list[current].minute)
+    //       ) {
+    //         setCurrent(current + 1);
+    //         showItem(current+1);
+    //       }
+    //       setStatus(states.upcoming);
+    //     }
+    //   });
+    //   return () => clearInterval(interval);
+    // }, [{ itemHour }, { itemMinute }]);
 
     const showItem = (current) => {
       onItemChange(current);
     };
 
-    if (status == states.upcoming) {
+    if (item.state == "upcoming") {
       return (
         <li className="list-items" key={index}>
           {itemHour}.{itemMinute}{afterNoon} - {item.title}
         </li>
       );
-    } else if (status == states.passed) {
+    } else if (item.state == "passed") {
       return (
         <li className="list-items-done" key={index}>
+            {itemHour}.{itemMinute}{afterNoon} - {item.title}
+          <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
+        </li>
+      );
+    } else if (item.state == "current-before") {
+      return (
+        <li className="list-items" key={index}>
+            {itemHour}.{itemMinute}{afterNoon} - {item.title}
+          <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
+        </li>
+      );
+    } else if (item.state == "current") {
+      return (
+        <li className="list-items-current" key={index}>
             {itemHour}.{itemMinute}{afterNoon} - {item.title}
           <BsFillCheckCircleFill className="w-[30px] ml-[10px] aspect-square" />
         </li>
