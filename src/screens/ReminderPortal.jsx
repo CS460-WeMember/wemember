@@ -56,7 +56,7 @@ function ReminderPortal() {
         list[i].state = "upcoming";
       }
       if (
-        (i == 0 || list[i - 1].state == "passed" || i == list.length - 1) &&
+        (i == 0 || list[i - 1].state == "passed") &&
         list[i].state == "upcoming"
       ) {
         list[i - 1].state = "current";
@@ -123,68 +123,14 @@ function ReminderPortal() {
     console.log("====================================");
   };
 
-  // Define the debounce function to delay the fetchList call.
-  const debounce = (func, delay) => {
-    let timeoutId;
-    return (...args) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-      timeoutId = setTimeout(() => {
-        func.apply(null, args);
-      }, delay);
-    };
-  };
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLoading(true);
-      debounce(fetchList(), 500);
-      setLoading(false);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    pb.collection("regular").subscribe("*", function (e) {
+      fetchList();
+    });
 
-  useEffect(() => {
-    const debouncedFetchList = debounce(fetchList, 500);
-
-    // Subscribe to changes using the debouncedFetchList function.
-    // pb.collection("regular").subscribe("*", function (e) {
-    //   const reminder = e.record;
-    //   const today = new Date();
-    //   const tempList = list;
-    //   if (reminder.day == today.getDay() - 1 || reminder.day == -1) {
-    //     if (
-    //       today.getHours() > reminder.hour ||
-    //       (today.getHours() == reminder.hour &&
-    //         today.getMinutes() > reminder.hour)
-    //     ) {
-    //       reminder.state = "passed";
-    //     } else {
-    //       reminder.state = "upcoming";
-    //     }
-    //     tempList.push(reminder);
-    //     tempList.sort((a, b) => {
-    //       if (a.hour === b.hour) {
-    //         return a.minute - b.minute;
-    //       } else {
-    //         return a.hour - b.hour;
-    //       }
-    //     });
-    //     console.log(e.record);
-    //     console.log("subscribe reminder");
-    //     console.log("KLEJLKJRLKNFKNKSNASLKMFKDMF");
-    //     console.log(list);
-    //     console.log("KLEJLKJRLKNFKNKSNASLKMFKDMF");
-    //     //setList(tempList);
-    // }
-
-    // });
-
-    // pb.collection("adhoc").subscribe("*", function (e) {
-    //   console.log(e.action);
-    //   console.log("why are u here");
-    // });
+    pb.collection("adhoc").subscribe("*", function (e) {
+      fetchList();
+    });
 
     // Fetch the list initially.
     fetchList();
