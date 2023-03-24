@@ -61,3 +61,13 @@ pb.collection("regular").subscribe("*", function (e) {
         list[i].state = "current";
     }
   }
+
+
+
+  for (var i = 0; i < list.length; i++) {
+    function timeoutFunction(i) {
+      setIndex(i);
+      list[i].state = "current";
+    }
+    window.setTimeout(timeoutFunction(i), 10000);
+  }
