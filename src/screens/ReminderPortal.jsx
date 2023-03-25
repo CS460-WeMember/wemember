@@ -1,9 +1,15 @@
 import ReminderList from "../components/ReminderList.jsx";
-import ReminderCard from "../components/ReminderCard.jsx";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import pb from "../api/pocketbase.jsx";
 import "../styles/ReminderPortal.css";
 import { BiCheck } from "react-icons/bi";
+
+const soundLevel = {
+  off: 0,
+  low: 0.3,
+  mid: 0.6,
+  high: 1,
+};
 
 function ReminderPortal() {
   const [list, setList] = useState([]);
@@ -245,6 +251,52 @@ function ReminderPortal() {
     }
   };
 
+  const audioRef = useRef(null);
+
+  function getAudioUrl(item) {
+    if (!item.audio) {
+      return null;
+    } else {
+      return (
+        import.meta.env.VITE_API_URL +
+        "/api/files/" +
+        item["@collectionName"] +
+        "/" +
+        item.id +
+        "/" +
+        item.audio
+      );
+    }
+  }
+
+  function getVolumeFromOptions() {
+    const vol = list[index].options.sound;
+    if (vol) {
+      if (parseInt(vol)) {
+        console.log(parseInt(vol));
+        return parseInt(vol)/100
+      } else {
+        console.log(vol);
+        return soundLevel[vol];
+      }
+    } else {
+      return 1; // Default volume level if options are not available or valid
+    }
+  }
+
+  // users need to allow this website to play audio
+  // otherwise it will not autoplay
+  // go settings > set sound
+  // allow the website e.g. 127.0.0.1 (localhost)
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = getVolumeFromOptions();
+
+      // Play the audio
+      audioRef.current.play(); 
+    }
+  }, [list[index]]);
+
   const doneCard = (index) => {
     return (
       <div className="reminder-main-container">
@@ -268,10 +320,12 @@ function ReminderPortal() {
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
           <div className="white-display-screen">
+          
             {list[index].state == "done" ? (
               <div>{doneCard(index)}</div>
             ) : (
               <div className="reminder-main-container">
+                {getAudioUrl(list[index]) ? <audio src={getAudioUrl(list[index])} ref={audioRef} autoPlay /> : ""}
                 {image(list[index])}
                 <div className="reminder-text-container">
                   <h1 className="reminder-text">{list[index].title}</h1>
