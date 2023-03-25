@@ -147,9 +147,9 @@ function ReminderPortal() {
         list.push(record);
       }
     });
-    console.log(day);
+    console.log(today.getDay());
     regularList.forEach((record) => {
-      if (day - 1 == record.day || record.day == -1) {
+      if (today.getDay() - 1 == record.day || (today.getDay() == 0 && record.day == 6) || record.day == -1) {
         today.setUTCHours(record.hour);
         today.setUTCMinutes(record.minute);
         today.setUTCMilliseconds(0);
