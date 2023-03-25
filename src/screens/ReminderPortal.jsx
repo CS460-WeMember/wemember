@@ -6,7 +6,6 @@ import "../styles/ReminderPortal.css";
 import { BiCheck } from "react-icons/bi";
 
 function ReminderPortal() {
-  // const [done, setDone] = useState(false);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
@@ -113,10 +112,10 @@ function ReminderPortal() {
         //if the state is passed, change its state to current
         if (list[i].state == "passed") {
           list[i].state = "current";
-          // setDone(false);
+           ;
         } else if (list[i].state == "done") {
           list[i].state = "done";
-          // setDone(true);
+           ;
         }
         setIndex(i);
         //if first element is NOT the only element in the list and its state is passed
@@ -124,9 +123,9 @@ function ReminderPortal() {
       } else if (i == 0 && list.length > 1) {
         if (list[i + 1].state == "upcoming") {
           if (list[i].state == "done") {
-            // setDone(true);
+             ;
           } else {
-            // setDone(false);
+             ;
           }
           list[i].state = "current";
           setIndex(i);
@@ -144,10 +143,10 @@ function ReminderPortal() {
         console.log(list[i].title);
         if (list[i - 1].state == "done") {
           list[i - 1].state = "done";
-          // setDone(true);
+           ;
         } else {
           list[i - 1].state = "current";
-          // setDone(false);
+           ;
         }
         setIndex(i - 1);
 
@@ -155,10 +154,10 @@ function ReminderPortal() {
       } else if (i == list.length - 1) {
         if (list[i].state == "passed") {
           list[i].state = "current";
-          // setDone(false);
+           ;
           setIndex(i);
         } else if (list[i].state == "done") {
-          // setDone(true);
+           ;
         }
       }
     }
@@ -258,7 +257,7 @@ function ReminderPortal() {
         finished: now.toUTCString(),
       });
     }
-    // setDone(true);
+     ;
     console.log("done button clicked!");
 
     //
