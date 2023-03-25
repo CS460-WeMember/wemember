@@ -6,7 +6,7 @@ import "../styles/ReminderPortal.css";
 import { BiCheck } from "react-icons/bi";
 
 function ReminderPortal() {
-  const [done, setDone] = useState(false);
+  // const [done, setDone] = useState(false);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
@@ -100,11 +100,9 @@ function ReminderPortal() {
           list[i].state = "done";
         } else {
           list[i].state = "passed";
-          setDone(false);
         }
       } else {
         list[i].state = "upcoming";
-        setDone(false);
       }
 
       /*-----------------------------------------
@@ -115,10 +113,10 @@ function ReminderPortal() {
         //if the state is passed, change its state to current
         if (list[i].state == "passed") {
           list[i].state = "current";
-          setDone(false);
-        } else {
+          // setDone(false);
+        } else if (list[i].state == "done") {
           list[i].state = "done";
-          setDone(true);
+          // setDone(true);
         }
         setIndex(i);
         //if first element is NOT the only element in the list and its state is passed
@@ -126,9 +124,9 @@ function ReminderPortal() {
       } else if (i == 0 && list.length > 1) {
         if (list[i + 1].state == "upcoming") {
           if (list[i].state == "done") {
-            setDone(true);
+            // setDone(true);
           } else {
-            setDone(false);
+            // setDone(false);
           }
           list[i].state = "current";
           setIndex(i);
@@ -143,13 +141,13 @@ function ReminderPortal() {
         (list[i - 1].state == "passed" || list[i - 1].state == "done") &&
         list[i].state == "upcoming"
       ) {
-        console.log(list[i].title)
+        console.log(list[i].title);
         if (list[i - 1].state == "done") {
           list[i - 1].state = "done";
-          setDone(true);
+          // setDone(true);
         } else {
           list[i - 1].state = "current";
-          setDone(false);
+          // setDone(false);
         }
         setIndex(i - 1);
 
@@ -157,12 +155,11 @@ function ReminderPortal() {
       } else if (i == list.length - 1) {
         if (list[i].state == "passed") {
           list[i].state = "current";
-          setDone(false);
+          // setDone(false);
           setIndex(i);
         } else if (list[i].state == "done") {
-          setDone(true);
+          // setDone(true);
         }
-        
       }
     }
   }
@@ -201,7 +198,14 @@ function ReminderPortal() {
 
     regularList.forEach((record) => {
       if (record.day == today.getDay() - 1 || record.day == -1) {
+        today.setUTCHours(record.hour);
+        today.setUTCMinutes(record.minute);
+        today.setUTCMilliseconds(0);
         record.date = today.toISOString().split("T")[0];
+        record.when =
+          today.toISOString().split("T")[0] +
+          " " +
+          today.toISOString().split("T")[1].replace("Z", "");
         list.push(record);
       }
     });
@@ -214,50 +218,16 @@ function ReminderPortal() {
       }
     });
     assignState(list);
+    const upcomingItems = list.filter(item => new Date(item.when).getTime() > new Date().getTime());
+    if (upcomingItems.length > 0) {
+      const timeDifference = new Date(upcomingItems[0].when).getTime() - new Date().getTime();
+
+      setTimeout(fetchList, timeDifference);
+    }
+    
     setList(list);
     setLoading(false);
   };
-
-  for (var i = 0; i < list.length; i++) {
-
-    if (list[i].state == "upcoming") {
-      const timeoutFunction = (i, time) => {
-        setIndex(i);
-        setDone(false);
-        fetchList();
-        if (list.length > 1 && list[i-1].state == "current") {
-          list[i-1].state = "passed";
-        }
-        list[i].state = "current";
-        console.log("timeout function" + time);
-      };
-      var time = 0;
-
-      if (list[i]["@collectionName"] == "adhoc") {
-        time = new Date(list[i].when) - new Date().getTime();
-        console.log(time);
-        window.setTimeout(timeoutFunction, time, i, time);
-      }
-
-      if (list[i]["@collectionName"] == "regular"){
-        // const string = "" + new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + "T" + list[i].hour + ":" + list[i].minute + ":00Z";
-        // console.log(string);
-        // console.log(new Date(string).toDateString + new Date(string).toTimeString());
-        if (list[i].hour == new Date().getHours()) {
-          time = (list[i].minute - new Date().getMinutes())*30000;
-          console.log("1");
-        } else if (list[i].minute < new Date().getMinutes()) {
-          time = ((list[i].hour - new Date().getHours() + 1) * 60 + list[i].minute + (60 - new Date().getMinutes())) * 30000;
-          console.log("2");
-        } else {
-          time = ((list[i].hour - new Date().getHours() + 1) * 60 +  (list[i].minute - new Date().getMinutes)) * 30000;
-          console.log("3");
-        }
-        console.log(time);
-        window.setTimeout(timeoutFunction, time, i, time);
-      }
-    }
-  }
 
   useEffect(() => {
     fetchList();
@@ -288,7 +258,7 @@ function ReminderPortal() {
         finished: now.toUTCString(),
       });
     }
-    setDone(true);
+    // setDone(true);
     console.log("done button clicked!");
 
     //
@@ -327,7 +297,9 @@ function ReminderPortal() {
     return (
       <div className="reminder-main-container">
         <div className="reminder-text-container">
-          <h1 className="reminder-text">Thank you for completing { list[index].title }!</h1>
+          <h1 className="reminder-text">
+            Thank you for completing {list[index].title}!
+          </h1>
         </div>
       </div>
     );
@@ -344,7 +316,7 @@ function ReminderPortal() {
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
           <div className="white-display-screen">
-            {done ? (
+            {list[index].state == "done" ? (
               <div>{doneCard(index)}</div>
             ) : (
               <div className="reminder-main-container">
