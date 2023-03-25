@@ -146,6 +146,7 @@ function ReminderPortal() {
 
     var list = [];
     const today = new Date();
+    const day = today.getDay();
 
     adhocList.forEach((record) => {
       if (
@@ -155,9 +156,8 @@ function ReminderPortal() {
         list.push(record);
       }
     });
-
     regularList.forEach((record) => {
-      if (record.day == today.getDay() - 1 || record.day == -1) {
+      if (day-1 == record.day|| record.day == -1) {
         today.setUTCHours(record.hour);
         today.setUTCMinutes(record.minute);
         today.setUTCMilliseconds(0);
@@ -314,13 +314,14 @@ function ReminderPortal() {
     );
   };
 
+  if (loading) {
+    return null;
+  }
+
   return (
     <div className="whole-screen">
       <audio id="myAudio" autoPlay></audio>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
+      
           <div className="blue-sidebar">
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
@@ -350,8 +351,6 @@ function ReminderPortal() {
               </div>
             )}
           </div>
-        </>
-      )}
     </div>
   );
 }
