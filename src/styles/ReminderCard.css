@@ -28,6 +28,7 @@
 
 .reminder-text-container{
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 80%;
@@ -44,6 +45,15 @@
     font-size: 4rem;
     word-wrap: break-word;
     color: #146887;
+    text-align: center;
+}
+
+.reminder-subtitle{
+    font-weight: normal;
+    font-size: 1.75rem;
+    word-wrap: break-word;
+    color: #146887;
+    text-align: center;
 }
 
 .done-btn {

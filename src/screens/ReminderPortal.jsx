@@ -6,6 +6,9 @@ import "../styles/ReminderPortal.css";
 import { BiCheck } from "react-icons/bi";
 
 function ReminderPortal() {
+  //checks if the task indicated by index is done
+  const [done, setDone] = useState(false);
+
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
@@ -114,28 +117,32 @@ function ReminderPortal() {
           setIndex(i);
         }
 
-      /*---------------------------------------------
-      IF WE ARE NOT AT THE FIRST ELEMENT IN THE LIST
-      ----------------------------------------------*/
-      } else if (  
+      /*-----------------------------------------------------
+      IF WE ARE NOT AT THE FIRST OR LAST ELEMENT IN THE LIST
+      ------------------------------------------------------*/
+      } else if (
         //if previous reminder is passed AND the reminder's
         //state is upcoming, set the previous reminder to current, and update the index
         (list[i - 1].state == "passed"  &&
         list[i].state == "upcoming")
       ) {
         list[i - 1].state = "current";
-        setIndex(i-1);
-        
-        //else if the reminder is the last reminder, set the state to current. 
-      } else if (
-        i == list.length - 1 && list[i-1].state == "passed"
-      ) {
-        list[i].state = "current";
-        setIndex(i);
+        setDone(false);
+        setIndex(i - 1);
+
+      /*-----------------------------------------
+      IF WE ARE AT THE LAST ELEMENT IN THE LIST
+      ------------------------------------------*/
+      } else if (i == list.length - 1) {
+        if (list[i].state == "passed" && list[i - 1].state == "done" || list[i - 1].state == "passed") {
+          list[i].state = "current";
+          setIndex(i);
+        }
       }
       console.log(list[i].state);
     }
   }
+
 
   const fetchList = async () => {
     setLoading(true);
@@ -242,6 +249,17 @@ function ReminderPortal() {
     }
   };
 
+  const doneCard = () => {
+    return(
+      <div className="reminder-main-container">
+        <div className="reminder-text-container">
+          <h1 className="reminder-text">
+            Thank you for completing this task!
+          </h1>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="whole-screen">
       {loading ? (
@@ -252,7 +270,16 @@ function ReminderPortal() {
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
           <div className="white-display-screen">
-            {list.length > 0 ? (
+            {done && 
+              <div className="reminder-main-container">
+                <div className="reminder-text-container">
+                  <h1 className="reminder-text" style={{fontSize:"32px"}}>
+                    Thank you for completing your task! 
+                  </h1>
+                </div>
+              </div>
+              }
+            {list.length > 0 && !done ? (
               <div className="reminder-main-container">
                 {image(list[index])}
                 {/* border flex aspect-2/1 min-w-[300px] w-3/12 md:w-1/2 lg:w-7/12 border-light-blue rounded-lg shadow-lg mt-10 rounded-b-lg text-dark-blue justify-center items-center */}
