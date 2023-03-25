@@ -14,19 +14,23 @@ function CancelButton({style, repeat, recordId}) {
     console.log("recordId: " + recordId);
 
     async function handleClick(event) {
-        if (!(recordId ==="null")) {
-            var collection = "";
-            if (repeat === "nil") {
-                collection = "adhoc";
-            } else {
-                collection = "regular"
+        try {
+            if (!(recordId ==="null")) {
+                var collection = "";
+                if (repeat === "nil") {
+                    collection = "adhoc";
+                } else {
+                    collection = "regular"
+                }
+                const pb = new PocketBase(url);
+                const response = await pb.collection(collection).delete(recordId);
+                localStorage.setItem("repeat", null);
+                localStorage.setItem("recordId", null);
             }
-            const pb = new PocketBase(url);
-            const response = await pb.collection(collection).delete(recordId);
-            localStorage.setItem("repeat", null);
-            localStorage.setItem("recordId", null);
+            navigate("/");
+        } catch (error) {
+            navigate("/");
         }
-        navigate("/");
     }
 
     return(
