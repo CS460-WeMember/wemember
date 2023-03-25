@@ -303,13 +303,14 @@ function ReminderPortal() {
 
   const doneCard = (index) => {
     return (
-      <div className="reminder-main-container">
         <div className="reminder-text-container">
-          <h1 className="reminder-text">
-            Thank you for completing {list[index].title}!
+          <h1 className="reminder-text" style={{fontSize: "2rem"}}>
+            Thank you for completing 
           </h1>
+          <text className="reminder-subtitle">
+            {list[index].title}!
+          </text>
         </div>
-      </div>
     );
   };
 
@@ -326,7 +327,7 @@ function ReminderPortal() {
           <div className="white-display-screen">
           
             {list[index].state == "done" ? (
-              <div>{doneCard(index)}</div>
+              <div className="reminder-main-container">{doneCard(index)}</div>
             ) : (
               <div className="reminder-main-container">
                 {getAudioUrl(list[index]) ? <audio src={getAudioUrl(list[index])} ref={audioRef} autoPlay /> : ""}
