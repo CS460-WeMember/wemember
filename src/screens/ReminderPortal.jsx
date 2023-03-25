@@ -73,10 +73,8 @@ function ReminderPortal() {
         //if the state is passed, change its state to current
         if (list[i].state == "passed") {
           list[i].state = "current";
-           ;
         } else if (list[i].state == "done") {
           list[i].state = "done";
-           ;
         }
         setIndex(i);
         //if first element is NOT the only element in the list and its state is passed
@@ -84,15 +82,13 @@ function ReminderPortal() {
       } else if (i == 0 && list.length > 1) {
         if (list[i + 1].state == "upcoming") {
           if (list[i].state == "done") {
-             ;
           } else {
-             ;
           }
           list[i].state = "current";
           setIndex(i);
         }
 
-      /*-----------------------------------------------------
+        /*-----------------------------------------------------
       IF WE ARE NOT AT THE FIRST OR LAST ELEMENT IN THE LIST
       ------------------------------------------------------*/
       } else if (
@@ -103,10 +99,8 @@ function ReminderPortal() {
       ) {
         if (list[i - 1].state == "done") {
           list[i - 1].state = "done";
-           ;
         } else {
           list[i - 1].state = "current";
-           ;
         }
         setIndex(i - 1);
 
@@ -114,15 +108,12 @@ function ReminderPortal() {
       } else if (i == list.length - 1) {
         if (list[i].state == "passed") {
           list[i].state = "current";
-           ;
           setIndex(i);
         } else if (list[i].state == "done") {
-           ;
         }
       }
     }
   }
-
 
   const fetchList = async () => {
     setLoading(true);
@@ -146,7 +137,7 @@ function ReminderPortal() {
 
     var list = [];
     const today = new Date();
-    const day = today.getDay();
+    const day = today.getDay() == 0 ? 7 : today.getDay();
 
     adhocList.forEach((record) => {
       if (
@@ -156,8 +147,9 @@ function ReminderPortal() {
         list.push(record);
       }
     });
+    console.log(day);
     regularList.forEach((record) => {
-      if (day-1 == record.day|| record.day == -1) {
+      if (day - 1 == record.day || record.day == -1) {
         today.setUTCHours(record.hour);
         today.setUTCMinutes(record.minute);
         today.setUTCMilliseconds(0);
@@ -178,15 +170,18 @@ function ReminderPortal() {
       }
     });
     assignState(list);
-    const upcomingItems = list.filter(item => new Date(item.when).getTime() > new Date().getTime());
+    const upcomingItems = list.filter(
+      (item) => new Date(item.when).getTime() > new Date().getTime()
+    );
     if (upcomingItems.length > 0) {
-      const timeDifference = new Date(upcomingItems[0].when).getTime() - new Date().getTime();
+      const timeDifference =
+        new Date(upcomingItems[0].when).getTime() - new Date().getTime();
 
       setTimeout(fetchList, timeDifference);
     } else {
-      setIndex(list.length-1);
+      setIndex(list.length - 1);
     }
-    
+
     setList(list);
     setLoading(false);
   };
@@ -220,7 +215,6 @@ function ReminderPortal() {
         finished: now.toUTCString(),
       });
     }
-     ;
     console.log("done button clicked!");
 
     //
@@ -278,7 +272,7 @@ function ReminderPortal() {
     if (vol) {
       if (parseInt(vol)) {
         console.log(parseInt(vol));
-        return parseInt(vol)/100
+        return parseInt(vol) / 100;
       } else {
         console.log(vol);
         return soundLevel[vol];
@@ -297,20 +291,18 @@ function ReminderPortal() {
       audioRef.current.volume = getVolumeFromOptions();
 
       // Play the audio
-      audioRef.current.play(); 
+      audioRef.current.play();
     }
   }, [list[index]]);
 
   const doneCard = (index) => {
     return (
-        <div className="reminder-text-container">
-          <h1 className="reminder-text" style={{fontSize: "2rem"}}>
-            Thank you for completing 
-          </h1>
-          <text className="reminder-subtitle">
-            {list[index].title}!
-          </text>
-        </div>
+      <div className="reminder-text-container">
+        <h1 className="reminder-text" style={{ fontSize: "2rem" }}>
+          Thank you for completing
+        </h1>
+        <text className="reminder-subtitle">{list[index].title}!</text>
+      </div>
     );
   };
 
@@ -321,36 +313,38 @@ function ReminderPortal() {
   return (
     <div className="whole-screen">
       <audio id="myAudio" autoPlay></audio>
-      
-          <div className="blue-sidebar">
-            <ReminderList onItemChange={handleNewItem} list={list} />
-          </div>
-          <div className="white-display-screen">
-          
-            {list[index].state == "done" ? (
-              <div className="reminder-main-container">{doneCard(index)}</div>
+
+      <div className="blue-sidebar">
+        <ReminderList onItemChange={handleNewItem} list={list} />
+      </div>
+      <div className="white-display-screen">
+        {list[index].state == "done" ? (
+          <div className="reminder-main-container">{doneCard(index)}</div>
+        ) : (
+          <div className="reminder-main-container">
+            {getAudioUrl(list[index]) ? (
+              <audio src={getAudioUrl(list[index])} ref={audioRef} autoPlay />
             ) : (
-              <div className="reminder-main-container">
-                {getAudioUrl(list[index]) ? <audio src={getAudioUrl(list[index])} ref={audioRef} autoPlay /> : ""}
-                <div className="reminder-main-content-wrapper"> 
-                  {image(list[index])}
-                  <div className="reminder-text-container">
-                    <text className="reminder-text">{list[index].title}</text>
-                  </div>
-                </div>
-                {
-                  list[index].device == "confirmation camera" && 
-                  <text className="reminder-subtitle" >
-                    Please take a photo when you are done!
-                  </text>
-                }
-                <button className="done-btn" onClick={handleTaskDone}>
-                  <BiCheck className="done-btn-check-icon"></BiCheck>
-                  <text>I am done!</text>
-                </button>
-              </div>
+              ""
             )}
+            <div className="reminder-main-content-wrapper">
+              {image(list[index])}
+              <div className="reminder-text-container">
+                <text className="reminder-text">{list[index].title}</text>
+              </div>
+            </div>
+            {list[index].device == "confirmation camera" && (
+              <text className="reminder-subtitle">
+                Please take a photo when you are done!
+              </text>
+            )}
+            <button className="done-btn" onClick={handleTaskDone}>
+              <BiCheck className="done-btn-check-icon"></BiCheck>
+              <text>I am done!</text>
+            </button>
           </div>
+        )}
+      </div>
     </div>
   );
 }
