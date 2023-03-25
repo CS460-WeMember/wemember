@@ -1,9 +1,15 @@
 import ReminderList from "../components/ReminderList.jsx";
-import ReminderCard from "../components/ReminderCard.jsx";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import pb from "../api/pocketbase.jsx";
 import "../styles/ReminderPortal.css";
 import { BiCheck } from "react-icons/bi";
+
+const soundLevel = {
+  off: 0,
+  low: 0.3,
+  mid: 0.6,
+  high: 1,
+};
 
 function ReminderPortal() {
   //checks if the task indicated by index is done
@@ -12,53 +18,24 @@ function ReminderPortal() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
-  function getAudioUrl(item) {
-    if (!item.audio) {
-      return null;
-    } else {
-      return (
-        import.meta.env.VITE_API_URL +
-        "/api/files/" +
-        item["@collectionName"] +
-        "/" +
-        item.id +
-        "/" +
-        item.audio
-      );
-    }
-  }
-  const [audio, setAudio] = useState(new Audio());
-
-  const playAudio = () => {
-    if (audio) {
-      if (list[index].options.sound === "off") {
-        audio.volume = soundLevel.off;
-      } else if (list[index].options.sound === "low") {
-        audio.volume = soundLevel.low;
-      } else if (list[index].options.sound === "mid") {
-        audio.volume = soundLevel.mid;
-      } else {
-        audio.volume = soundLevel.high;
-      }
-      setAudio(audio);
-    }
-    audio.play();
-  };
 
   //this function returns a boolean. If the task is finished, return true.
-  function getStateFromPb(item) {
+  function isReminderDone(item) {
     const now = new Date();
-    now.setUTCHours(now.getUTCHours() + 8)
+    now.setUTCHours(now.getUTCHours() + 8);
 
-    if (item["@collectionName"] == 'regular') {
+    if (item["@collectionName"] == "regular") {
       const finished = item.last_finished;
       //if finished is empty or finished occurred earlier than today's date
-      if (finished == '' || finished.split(' ')[0] < now.toISOString().split('T')[0]) {
+      if (
+        finished == "" ||
+        finished.split(" ")[0] < now.toISOString().split("T")[0]
+      ) {
         return false;
       }
     } else {
       const finished = item.finished;
-      if (finished == '') {
+      if (finished == "") {
         return false;
       }
     }
@@ -69,17 +46,6 @@ function ReminderPortal() {
   function assignState(list) {
     const today = new Date();
     for (var i = 0; i < list.length; i++) {
-      // if ((today.getHours() == list[i].hour && today.getMinutes() == list[i].minute) || list[i].state == "current-after") {
-      //   list[i].state = "current-after";
-      // }
-      if (
-        today.getHours() == list[i].hour &&
-        today.getMinutes() == list[i].minute
-      ) {
-        // console.log("play audio");
-        // setAudio(new Audio(getAudioUrl(list[i])));
-        // playAudio();
-      }
       /*-----------------------------------------
       SET INITIAL STATES
       -----------------------------------------*/
@@ -88,8 +54,9 @@ function ReminderPortal() {
         today.getHours() > list[i].hour ||
         (today.getHours() == list[i].hour &&
           today.getMinutes() >= list[i].minute)
-      ) {//if current time is more than the task time, set state to passed
-        if (getStateFromPb(list[i])) {
+      ) {
+        //if current time is more than the task time, set state to passed
+        if (isReminderDone(list[i])) {
           list[i].state = "done";
         } else {
           list[i].state = "passed";
@@ -102,17 +69,25 @@ function ReminderPortal() {
       IF WE ARE AT THE FIRST ELEMENT IN THE LIST
       -----------------------------------------*/
       //if first element is the only element in the list
-      if (i == 0 && list.length == 1 ) { 
+      if (i == 0 && list.length == 1) {
         //if the state is passed, change its state to current
         if (list[i].state == "passed") {
           list[i].state = "current";
-          setIndex(i);
+           ;
+        } else if (list[i].state == "done") {
+          list[i].state = "done";
+           ;
         }
-
-      //if first element is NOT the only element in the list and its state is passed
-      //and the next element is upcoming, set its state to current
+        setIndex(i);
+        //if first element is NOT the only element in the list and its state is passed
+        //and the next element is upcoming, set its state to current
       } else if (i == 0 && list.length > 1) {
         if (list[i + 1].state == "upcoming") {
+          if (list[i].state == "done") {
+             ;
+          } else {
+             ;
+          }
           list[i].state = "current";
           setIndex(i);
         }
@@ -123,23 +98,28 @@ function ReminderPortal() {
       } else if (
         //if previous reminder is passed AND the reminder's
         //state is upcoming, set the previous reminder to current, and update the index
-        (list[i - 1].state == "passed"  &&
-        list[i].state == "upcoming")
+        (list[i - 1].state == "passed" || list[i - 1].state == "done") &&
+        list[i].state == "upcoming"
       ) {
-        list[i - 1].state = "current";
-        setDone(false);
+        if (list[i - 1].state == "done") {
+          list[i - 1].state = "done";
+           ;
+        } else {
+          list[i - 1].state = "current";
+           ;
+        }
         setIndex(i - 1);
 
-      /*-----------------------------------------
-      IF WE ARE AT THE LAST ELEMENT IN THE LIST
-      ------------------------------------------*/
+        //else if the reminder is the last reminder, set the state to current.
       } else if (i == list.length - 1) {
-        if (list[i].state == "passed" && list[i - 1].state == "done" || list[i - 1].state == "passed") {
+        if (list[i].state == "passed") {
           list[i].state = "current";
+           ;
           setIndex(i);
+        } else if (list[i].state == "done") {
+           ;
         }
       }
-      console.log(list[i].state);
     }
   }
 
@@ -178,7 +158,14 @@ function ReminderPortal() {
 
     regularList.forEach((record) => {
       if (record.day == today.getDay() - 1 || record.day == -1) {
-        record.date = today.toISOString().split('T')[0];
+        today.setUTCHours(record.hour);
+        today.setUTCMinutes(record.minute);
+        today.setUTCMilliseconds(0);
+        record.date = today.toISOString().split("T")[0];
+        record.when =
+          today.toISOString().split("T")[0] +
+          " " +
+          today.toISOString().split("T")[1].replace("Z", "");
         list.push(record);
       }
     });
@@ -191,6 +178,15 @@ function ReminderPortal() {
       }
     });
     assignState(list);
+    const upcomingItems = list.filter(item => new Date(item.when).getTime() > new Date().getTime());
+    if (upcomingItems.length > 0) {
+      const timeDifference = new Date(upcomingItems[0].when).getTime() - new Date().getTime();
+
+      setTimeout(fetchList, timeDifference);
+    } else {
+      setIndex(list.length-1);
+    }
+    
     setList(list);
     setLoading(false);
   };
@@ -211,14 +207,24 @@ function ReminderPortal() {
     setIndex(itemChange);
   }
 
-  
-
-  function handleTaskDone(event) {
+  const handleTaskDone = async (event) => {
+    //update the finished timings to pocketbase
     const now = new Date();
     now.setUTCHours(now.getUTCHours() + 8);
-    console.log(now.toUTCString());
+    if (list[index]["@collectionName"] == "regular") {
+      const record = await pb.collection("regular").update(list[index].id, {
+        last_finished: now.toUTCString(),
+      });
+    } else {
+      const record = await pb.collection("adhoc").update(list[index].id, {
+        finished: now.toUTCString(),
+      });
+    }
+     ;
     console.log("done button clicked!");
-  }
+
+    //
+  };
 
   function getImageUrl(item) {
     if (!item.picture) {
@@ -249,19 +255,67 @@ function ReminderPortal() {
     }
   };
 
-  const doneCard = () => {
-    return(
+  const audioRef = useRef(null);
+
+  function getAudioUrl(item) {
+    if (!item.audio) {
+      return null;
+    } else {
+      return (
+        import.meta.env.VITE_API_URL +
+        "/api/files/" +
+        item["@collectionName"] +
+        "/" +
+        item.id +
+        "/" +
+        item.audio
+      );
+    }
+  }
+
+  function getVolumeFromOptions() {
+    const vol = list[index].options.sound;
+    if (vol) {
+      if (parseInt(vol)) {
+        console.log(parseInt(vol));
+        return parseInt(vol)/100
+      } else {
+        console.log(vol);
+        return soundLevel[vol];
+      }
+    } else {
+      return 1; // Default volume level if options are not available or valid
+    }
+  }
+
+  // users need to allow this website to play audio
+  // otherwise it will not autoplay
+  // go settings > set sound
+  // allow the website e.g. 127.0.0.1 (localhost)
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = getVolumeFromOptions();
+
+      // Play the audio
+      audioRef.current.play(); 
+    }
+  }, [list[index]]);
+
+  const doneCard = (index) => {
+    return (
       <div className="reminder-main-container">
         <div className="reminder-text-container">
           <h1 className="reminder-text">
-            Thank you for completing this task!
+            Thank you for completing {list[index].title}!
           </h1>
         </div>
       </div>
-    )
-  }
+    );
+  };
+
   return (
     <div className="whole-screen">
+      <audio id="myAudio" autoPlay></audio>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -270,32 +324,21 @@ function ReminderPortal() {
             <ReminderList onItemChange={handleNewItem} list={list} />
           </div>
           <div className="white-display-screen">
-            {done && 
+          
+            {list[index].state == "done" ? (
+              <div>{doneCard(index)}</div>
+            ) : (
               <div className="reminder-main-container">
-                <div className="reminder-text-container">
-                  <h1 className="reminder-text" style={{fontSize:"32px"}}>
-                    Thank you for completing your task! 
-                  </h1>
-                </div>
-              </div>
-              }
-            {list.length > 0 && !done ? (
-              <div className="reminder-main-container">
+                {getAudioUrl(list[index]) ? <audio src={getAudioUrl(list[index])} ref={audioRef} autoPlay /> : ""}
                 {image(list[index])}
-                {/* border flex aspect-2/1 min-w-[300px] w-3/12 md:w-1/2 lg:w-7/12 border-light-blue rounded-lg shadow-lg mt-10 rounded-b-lg text-dark-blue justify-center items-center */}
                 <div className="reminder-text-container">
-                  <h1 className="reminder-text">
-                    {list[index].title}
-                    {/* <Batch itemHour={item.hour} itemMin ={item.minute}/> */}
-                  </h1>
+                  <h1 className="reminder-text">{list[index].title}</h1>
                 </div>
                 <button className="done-btn" onClick={handleTaskDone}>
                   <BiCheck className="done-btn-check-icon"></BiCheck>
                   <text>I am done!</text>
                 </button>
               </div>
-            ) : (
-              <p>No reminders found.</p>
             )}
           </div>
         </>
