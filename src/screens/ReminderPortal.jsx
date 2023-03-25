@@ -10,54 +10,6 @@ function ReminderPortal() {
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
 
-  // function getAudioUrl(item) {
-  //   if (!item.audio) {
-  //     return null;
-  //   }
-  //   setAudio(
-  //     import.meta.env.VITE_API_URL +
-  //       "/api/files/" +
-  //       item["@collectionName"] +
-  //       "/" +
-  //       item.id +
-  //       "/" +
-  //       item.audio
-  //   );
-
-  //   if (audio) {
-  //     if (list[index].options.sound === "off") {
-  //       audio.volume = soundLevel.off;
-  //     } else if (list[index].options.sound === "low") {
-  //       audio.volume = soundLevel.low;
-  //     } else if (list[index].options.sound === "mid") {
-  //       audio.volume = soundLevel.mid;
-  //     } else {
-  //       audio.volume = soundLevel.high;
-  //     }
-  //     setAudio(audio);
-  //   }
-  //   // return audio;
-
-  //   // audio.play();
-  // }
-  // const [audio, setAudio] = useState(new Audio(getAudioUrl(list[index])));
-
-  // const playAudio = () => {
-  //   if (audio) {
-  //     if (list[index].options.sound === "off") {
-  //       audio.volume = soundLevel.off;
-  //     } else if (list[index].options.sound === "low") {
-  //       audio.volume = soundLevel.low;
-  //     } else if (list[index].options.sound === "mid") {
-  //       audio.volume = soundLevel.mid;
-  //     } else {
-  //       audio.volume = soundLevel.high;
-  //     }
-  //     setAudio(audio);
-  //   }
-  //   audio.play();
-  // };
-
   //this function returns a boolean. If the task is finished, return true.
   function isReminderDone(item) {
     const now = new Date();
@@ -140,7 +92,6 @@ function ReminderPortal() {
         (list[i - 1].state == "passed" || list[i - 1].state == "done") &&
         list[i].state == "upcoming"
       ) {
-        console.log(list[i].title);
         if (list[i - 1].state == "done") {
           list[i - 1].state = "done";
            ;
@@ -222,6 +173,8 @@ function ReminderPortal() {
       const timeDifference = new Date(upcomingItems[0].when).getTime() - new Date().getTime();
 
       setTimeout(fetchList, timeDifference);
+    } else {
+      setIndex(list.length-1);
     }
     
     setList(list);
