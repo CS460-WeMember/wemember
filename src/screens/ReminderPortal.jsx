@@ -331,10 +331,18 @@ function ReminderPortal() {
             ) : (
               <div className="reminder-main-container">
                 {getAudioUrl(list[index]) ? <audio src={getAudioUrl(list[index])} ref={audioRef} autoPlay /> : ""}
-                {image(list[index])}
-                <div className="reminder-text-container">
-                  <h1 className="reminder-text">{list[index].title}</h1>
+                <div className="reminder-main-content-wrapper"> 
+                  {image(list[index])}
+                  <div className="reminder-text-container">
+                    <text className="reminder-text">{list[index].title}</text>
+                  </div>
                 </div>
+                {
+                  list[index].device == "confirmation camera" && 
+                  <text className="reminder-subtitle" >
+                    Please take a photo when you are done!
+                  </text>
+                }
                 <button className="done-btn" onClick={handleTaskDone}>
                   <BiCheck className="done-btn-check-icon"></BiCheck>
                   <text>I am done!</text>
