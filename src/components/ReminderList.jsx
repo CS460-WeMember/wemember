@@ -8,7 +8,8 @@ const states = {
   passed: 1,
 };
 
-const ReminderList = ({ onItemChange, list }) => {
+const ReminderList = ({ onItemChange, list, index }) => {
+  const test = list[index];
   const navigate = useNavigate();
 
   const items = [];

@@ -18,6 +18,9 @@ function ReminderPortal() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
+  const [currentAudio, setCurrentAudio] = useState(new Audio());
+  const timeoutSetRef = useRef(false);
+  const [playing, setPlaying] = useState(false);
 
   //this function returns a boolean. If the task is finished, return true.
   function isReminderDone(item) {
@@ -64,6 +67,8 @@ function ReminderPortal() {
       } else {
         list[i].state = "upcoming";
       }
+      console.log(list[i].title);
+      console.log(list[i].state);
 
       /*-----------------------------------------
       IF WE ARE AT THE FIRST ELEMENT IN THE LIST
@@ -73,9 +78,10 @@ function ReminderPortal() {
         //if the state is passed, change its state to current
         if (list[i].state == "passed") {
           list[i].state = "current";
-        } else if (list[i].state == "done") {
-          list[i].state = "done";
         }
+        // else if (list[i].state == "done") {
+        //   list[i].state = "done";
+        // }
         setIndex(i);
         //if first element is NOT the only element in the list and its state is passed
         //and the next element is upcoming, set its state to current
@@ -97,9 +103,7 @@ function ReminderPortal() {
         (list[i - 1].state == "passed" || list[i - 1].state == "done") &&
         list[i].state == "upcoming"
       ) {
-        if (list[i - 1].state == "done") {
-          list[i - 1].state = "done";
-        } else {
+        if (list[i - 1].state == "passed") {
           list[i - 1].state = "current";
         }
         setIndex(i - 1);
@@ -109,7 +113,6 @@ function ReminderPortal() {
         if (list[i].state == "passed") {
           list[i].state = "current";
           setIndex(i);
-        } else if (list[i].state == "done") {
         }
       }
     }
@@ -149,7 +152,11 @@ function ReminderPortal() {
     });
     console.log(today.getDay());
     regularList.forEach((record) => {
-      if (today.getDay() - 1 == record.day || (today.getDay() == 0 && record.day == 6) || record.day == -1) {
+      if (
+        today.getDay() - 1 == record.day ||
+        (today.getDay() == 0 && record.day == 6) ||
+        record.day == -1
+      ) {
         today.setUTCHours(record.hour);
         today.setUTCMinutes(record.minute);
         today.setUTCMilliseconds(0);
@@ -170,22 +177,148 @@ function ReminderPortal() {
       }
     });
     assignState(list);
-    const upcomingItems = list.filter(
-      (item) => new Date(item.when).getTime() > new Date().getTime()
-    );
-    if (upcomingItems.length > 0) {
-      const timeDifference =
-        new Date(upcomingItems[0].when).getTime() - new Date().getTime();
-
-      setTimeout(fetchList, timeDifference);
-    } else {
-      setIndex(list.length - 1);
-    }
-
     setList(list);
+    // const upcomingItems = list.filter(
+    //   (item) => new Date(item.when).getTime() > new Date().getTime()
+    // );
+    // if (upcomingItems.length > 0) {
+    //   const timeDifference =
+    //     new Date(upcomingItems[0].when).getTime() - new Date().getTime();
+
+    //   setTimeout(fetchList, timeDifference);
+    // } else {
+    //   setIndex(list.length - 1);
+    // }
+    timeoutFunction1(list);
     setLoading(false);
   };
 
+  function timeoutFunction1(list1) {
+    console.log("in timeout fuction before fore loop");
+    const today = new Date();
+    for (var i = 0; i < list1.length; i++) {
+      // if (timeoutSetRef.current) {
+      //   console.log("exiting timeout");
+      //   break;
+      // }
+      // timeoutSetRef.current = true;
+      const timeoutFunction = (i, time) => {
+        //console.log(playing);
+        // if (list1[i].audio != "") {
+        //   if (!playing) {
+        //     setPlaying(true);
+        //     const audioURL = getAudioUrl(list1[i]);
+        //     var audio = new Audio(audioURL);
+        //     audio.volume = getVolumeFromOptions2(list1[i]);
+        //     audio.play();
+        //     setTimeout(() => {
+        //       setPlaying(false);
+        //     }, 30000);
+        //   }
+        //   //setCurrentAudio(audio);
+        // }
+        setIndex(i);
+        if (list1.length > 1 && list1[i - 1].state == "current") {
+          list1[i - 1].state = "passed";
+        }
+        console.log(list1[i].audio);
+
+        list1[i].state = "current";
+        console.log("timeout function" + time);
+        playAudio2();
+      };
+      console.log(list1[i].title + ": " + list1[i].state);
+      if (list1[i].state == "upcoming") {
+        console.log("in timeout setting function");
+        var time = 0;
+
+        if (list1[i]["@collectionName"] == "adhoc") {
+          console.log("in adhoc function");
+          time = new Date(list1[i].when) - today.getTime();
+          console.log(time);
+          if (time > 10000) {
+            window.setTimeout(timeoutFunction, time, i, time);
+          }
+        }
+
+        if (list1[i]["@collectionName"] == "regular") {
+          console.log("in regular function");
+          // const string = "" + new Date().getFullYear() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getDate() + "T" + list1[i].hour + ":" + list1[i].minute + ":00Z";
+          // console.log(string);
+          // console.log(new Date(string).toDateString + new Date(string).toTimeString());
+          if (list1[i].hour == new Date().getHours()) {
+            time = (list1[i].minute - new Date().getMinutes()) * 60000;
+            console.log("1");
+          } else if (list1[i].minute < new Date().getMinutes()) {
+            time =
+              ((list1[i].hour - new Date().getHours() + 1) * 60 +
+                list1[i].minute +
+                (60 - new Date().getMinutes())) *
+              60000;
+            console.log("2");
+          } else {
+            time =
+              ((list1[i].hour - new Date().getHours() + 1) * 60 +
+                (list1[i].minute - new Date().getMinutes())) *
+              60000;
+            console.log("3");
+          }
+          console.log(time);
+          if (time > 10000) {
+            window.setTimeout(timeoutFunction, time, i, time);
+          }
+        }
+      }
+    }
+  }
+
+  function playAudio(item) {
+    if (item.audio != "") {
+      const audioURL = getAudioUrl(item);
+      var audio = new Audio(audioURL);
+      audio.volume = getVolumeFromOptions2(item);
+      audio.play();
+    }
+  }
+  // useEffect(() => {
+  //   if (audioRef.current) {
+  //     audioRef.current.volume = getVolumeFromOptions();
+
+  //     // Play the audio
+  //     audioRef.current.play();
+  //   }
+  // }, [list[index]]);
+
+  function playAudio2() {
+    if (audioRef.current) {
+      audioRef.current.volume = getVolumeFromOptions();
+
+      // Play the audio
+      audioRef.current.play();
+    }
+  }
+
+  function getVolumeFromOptions2(item) {
+    const vol = item.options.sound;
+    if (vol) {
+      if (parseInt(vol)) {
+        console.log(parseInt(vol));
+        return parseInt(vol) / 100;
+      } else {
+        console.log(vol);
+        return soundLevel[vol];
+      }
+    } else {
+      return 1; // Default volume level if options are not available or valid
+    }
+  }
+  pb.collection("adhoc").subscribe("*", function (e) {
+    fetchList();
+  });
+
+  pb.collection("regular").subscribe("*", function (e) {
+    fetchList();
+  });
   useEffect(() => {
     fetchList();
 
@@ -286,14 +419,13 @@ function ReminderPortal() {
   // otherwise it will not autoplay
   // go settings > set sound
   // allow the website e.g. 127.0.0.1 (localhost)
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = getVolumeFromOptions();
-
-      // Play the audio
-      audioRef.current.play();
-    }
-  }, [list[index]]);
+  // useEffect(() => {
+  //   currentAudio.play();
+  // }, [currentAudio]);
+  // useEffect(() => {
+  //   console.log("are u the problem");
+  //   timeoutFunction1();
+  // }, [list]);
 
   const doneCard = (index) => {
     return (
@@ -315,7 +447,7 @@ function ReminderPortal() {
       <audio id="myAudio" autoPlay></audio>
 
       <div className="blue-sidebar">
-        <ReminderList onItemChange={handleNewItem} list={list} />
+        <ReminderList onItemChange={handleNewItem} list={list} index={index} />
       </div>
       <div className="white-display-screen">
         {list[index].state == "done" ? (
@@ -323,7 +455,7 @@ function ReminderPortal() {
         ) : (
           <div className="reminder-main-container">
             {getAudioUrl(list[index]) ? (
-              <audio src={getAudioUrl(list[index])} ref={audioRef} autoPlay />
+              <audio src={getAudioUrl(list[index])} ref={audioRef} />
             ) : (
               ""
             )}
