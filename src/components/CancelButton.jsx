@@ -13,7 +13,7 @@ function CancelButton({ style, repeat, recordId }) {
   console.log("recordId: " + recordId);
 
   async function handleClick(event) {
-    if (!(recordId === "null")) {
+    if (!(recordId === "null") && !(recordId === null)) {
       var collection = "";
       if (repeat === "nil") {
         collection = "adhoc";
