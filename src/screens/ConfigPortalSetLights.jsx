@@ -48,14 +48,12 @@ function ConfigPortalSetLights() {
         const colorBrightness = "" + brightness;
         const sound = "" + audioVolume;
 
-        const options = 
-        {
-            "light": light, 
-            "brightness": colorBrightness, 
-            "sound": sound
-        }
-        console.log("options");
-        console.log(options);
+        //we need to store options in localStorage to send in the next
+        //screen, where we will append confirmation camera to options
+        localStorage.setItem("light", light);
+        localStorage.setItem("brightness", colorBrightness);
+        localStorage.setItem("sound", sound);
+
         //append the audio file to formData
         var fileInput = document.getElementById('audio');
         var file = fileInput.files[0];
@@ -85,12 +83,12 @@ function ConfigPortalSetLights() {
         const uploadAudioRes = await pb.collection(databaseCollection).update(recordId, formData);
         console.log("pocketbase audio upload response: ");
         console.log(uploadAudioRes);
-        //options upload
-        const uploadOptionsRes = await pb.collection(databaseCollection).update(recordId, {
-            "options": {options}
-        });
-        console.log("pocketbase options upload response: ");
-        console.log(uploadOptionsRes);
+        // //options upload
+        // const uploadOptionsRes = await pb.collection(databaseCollection).update(recordId, {
+        //     "options": {options}
+        // });
+        // console.log("pocketbase options upload response: ");
+        // console.log(uploadOptionsRes);
 
         //navigate to the next page
         navigate("/config/setothers");

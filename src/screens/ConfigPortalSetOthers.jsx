@@ -8,23 +8,32 @@ import { useNavigate } from "react-router-dom";
 import url from "../global/PocketbaseURL";
 import PocketBase from 'pocketbase';
 import Modal from 'react-modal';
+import selectSpecialDevicePic from "../assets/ConfigScreen_SpecialDevices.png";
+import selectConfirmationCameraPic from "../assets/ConfigScreen_ConfirmationCamera.png";
 
 function ConfigPortalSetTime() {
     const navigate = useNavigate();
 
-    //setting the special devices used
+    //setting the special devices used, and if confirmation camera is needed
     const [selectedDevice, setSelectedDevice] = useState("");
+    const [confirmationCamera, setConfirmationCamera] = useState("");
 
-    const handleRadioChange = (event) => {
+    const handleDeviceSelection = (event) => {
       setSelectedDevice(event.target.value);
+    };
+    const handleConfirmationCameraSelection = (event) => {
+      setConfirmationCamera(event.target.value);
     };
 
     async function handleFinishedButtonClick(event) {
         console.log("finished button clicked!");
-
+        /*---------------------------------------
+        CHECK THAT USER DIDNT LEAVE INPUTS BLANK
+        ---------------------------------------*/
         if (selectedDevice == "") {
-          setModalIsOpen(true);
-
+          openSelectDeviceModal();
+        } else if (confirmationCamera == "") {
+          openSelectCameraModal();
         } else {
           if (selectedDevice !== "nil") {
             /*-------------------------------
@@ -34,6 +43,14 @@ function ConfigPortalSetTime() {
             var formData = new FormData();
             formData.append("device", selectedDevice);
             formData.append("completeField", 2);
+
+            //format the options JSON
+            const options = {
+              "light" : localStorage.getItem("light"),
+              "brightness" : localStorage.getItem("brightness"),
+              "sound" : localStorage.getItem("sound"),
+              "confirmation" : confirmationCamera
+            }
   
             //url for upload and getting recordId
             const pb = new PocketBase(url);
@@ -46,10 +63,18 @@ function ConfigPortalSetTime() {
             } else { //for regular
                 databaseCollection = "regular";
             }
-    
-            const response = await pb.collection(databaseCollection).update(recordId, formData);
+            
+            //uploading device selection to database
+            const uploadDeviceRes = await pb.collection(databaseCollection).update(recordId, formData);
             console.log("pocketbase device upload response in set others: ");
-            console.log(response);
+            console.log(uploadDeviceRes);
+
+            //uploading options to database
+            const uploadOptionsRes = await pb.collection(databaseCollection).update(recordId, {
+                "options": options
+            });
+            console.log("pocketbase options upload response: ");
+            console.log(uploadOptionsRes);
           }
   
           if (selectedDevice === "nil") {
@@ -82,12 +107,22 @@ function ConfigPortalSetTime() {
 
     }
 
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const openModal = () => {
-      setModalIsOpen(true);
+    //handling the modal for device selection
+    const [selectDeviceModalIsOpen, setSelectDeviceModalIsOpen] = useState(false);
+    const openSelectDeviceModal = () => {
+      setSelectDeviceModalIsOpen(true);
     }
-    const closeModal = () => {
-      setModalIsOpen(false);
+    const closeSelectDeviceModal = () => {
+      setSelectDeviceModalIsOpen(false);
+    }
+
+    //handling the modal for confirmation camera
+    const [selectCameraModalIsOpen, setSelectCameraModalIsOpen] = useState(false);
+    const openSelectCameraModal = () => {
+      setSelectCameraModalIsOpen(true);
+    }
+    const closeSelectCameraModal = () => {
+      setSelectCameraModalIsOpen(false);
     }
 
     return(
@@ -95,11 +130,22 @@ function ConfigPortalSetTime() {
         <Modal
             className="input-validation-modal"
             overlayClassName="input-validation-modal-overlay"
-            isOpen={modalIsOpen}
-            onRequestClose={closeModal}
+            isOpen={selectDeviceModalIsOpen}
+            onRequestClose={closeSelectDeviceModal}
         >
-            <h2>Please select one option!</h2>
-            <button onClick={closeModal}>Got it!</button>
+            <h2>Please click one of the options!</h2>
+            <img src={selectSpecialDevicePic}/>
+            <button onClick={closeSelectDeviceModal}>Got it!</button>
+        </Modal>
+        <Modal
+            className="input-validation-modal"
+            overlayClassName="input-validation-modal-overlay"
+            isOpen={selectCameraModalIsOpen}
+            onRequestClose={closeSelectCameraModal}
+        >
+            <h2>Please click one of the options!</h2>
+            <img src={selectConfirmationCameraPic}/>
+            <button onClick={closeSelectCameraModal}>Got it!</button>
         </Modal>
           <div className="blue-container">
 
@@ -127,7 +173,7 @@ function ConfigPortalSetTime() {
                   <div className="main-input-container" style={{gap:"52px"}}>
 
                     <div className="task-incomplete-wrapper">
-                      <text className="question-text">
+                      <text className="question-text" style={{fontWeight: "bold"}}>
                         Are any special devices required? 
                       </text>
                       <div className="device-options-container">
@@ -136,7 +182,7 @@ function ConfigPortalSetTime() {
                           type="radio"
                           value="toothbrush"
                           checked={selectedDevice === "toothbrush"}
-                          onChange={handleRadioChange}
+                          onChange={handleDeviceSelection}
                           />
                           <text>
                             Toothbrush holder
@@ -147,10 +193,10 @@ function ConfigPortalSetTime() {
                           type="radio"
                           value="confirmation camera"
                           checked={selectedDevice === "confirmation camera"}
-                          onChange={handleRadioChange}
+                          onChange={handleDeviceSelection}
                           />
                           <text> 
-                            Confirmation Camera
+                            Button 1
                           </text>
                         </label>
                         <label>
@@ -158,14 +204,43 @@ function ConfigPortalSetTime() {
                           type="radio"
                           value="nil"
                           checked={selectedDevice === "nil"}
-                          onChange={handleRadioChange}
+                          onChange={handleDeviceSelection}
                           />
                           <text>
-                            None are needed!
+                            Button 2
                           </text>
                         </label>
                       </div>
+                    </div>
 
+                    <div className="task-incomplete-wrapper">
+                      <text className="question-text" style={{fontWeight: "bold"}}>
+                        Do you need a confirmation picture to be sent?
+                      </text>
+                      <div className="device-options-container">
+                        <label>
+                          <input
+                          type="radio"
+                          value="yes"
+                          checked={confirmationCamera === "yes"}
+                          onChange={handleConfirmationCameraSelection}
+                          />
+                          <text>
+                            Yes
+                          </text>
+                        </label>
+                        <label>
+                          <input
+                          type="radio"
+                          value="no"
+                          checked={confirmationCamera === "no"}
+                          onChange={handleConfirmationCameraSelection}
+                          />
+                          <text>
+                            No
+                          </text>
+                        </label>
+                      </div>
                     </div>
 
 

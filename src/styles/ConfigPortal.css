@@ -324,7 +324,7 @@ Styles for setting other options
 
 .device-options-container{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 32px;
