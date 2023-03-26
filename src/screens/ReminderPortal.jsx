@@ -465,7 +465,7 @@ function ReminderPortal() {
                 <text className="reminder-text">{list[index].title}</text>
               </div>
             </div>
-            {list[index].device == "confirmation camera" && (
+            {list[index].options.confirmation == "yes" && (
               <text className="reminder-subtitle">
                 Please take a photo when you are done!
               </text>
